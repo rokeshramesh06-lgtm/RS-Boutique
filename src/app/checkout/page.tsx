@@ -470,10 +470,20 @@ export default function CheckoutPage() {
                 <div className="space-y-3 mb-4 max-h-60 overflow-y-auto pr-2">
                   {items.map((item) => (
                     <div key={`${item.product.id}-${item.size}-${item.color}`} className="flex gap-3 items-center">
-                      <div
-                        className="w-12 h-12 rounded-lg flex-shrink-0"
-                        style={{ background: `linear-gradient(135deg, ${item.product.image_gradient.replace(' to ', ', ')})` }}
-                      />
+                      <div className="w-12 h-12 rounded-lg flex-shrink-0 overflow-hidden">
+                        {item.product.image_url ? (
+                          <img
+                            src={item.product.image_url}
+                            alt={item.product.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div
+                            className="w-full h-full"
+                            style={{ background: item.product.image_gradient }}
+                          />
+                        )}
+                      </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-body text-sm text-maroon-900 font-medium truncate">{item.product.name}</p>
                         <p className="font-body text-xs text-gray-500">{item.size} / {item.color} x {item.quantity}</p>

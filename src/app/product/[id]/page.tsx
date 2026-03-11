@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Product } from '@/types';
 import { useCart } from '@/context/CartContext';
 
@@ -123,39 +124,34 @@ export default function ProductDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
           {/* Image Area */}
           <div className="relative">
-            <div
-              className="aspect-square rounded-xl overflow-hidden relative"
-              style={{ background: `linear-gradient(135deg, ${product.image_gradient.replace(' to ', ', ')})` }}
-            >
-              {/* Decorative overlay */}
-              <div className="absolute inset-0 opacity-10" style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M30 0L60 30L30 60L0 30z' fill='none' stroke='%23ffffff' stroke-width='0.5'/%3E%3C/g%3E%3C/svg%3E")`,
-              }} />
+            <div className="aspect-square rounded-xl overflow-hidden relative bg-ivory-200">
+              {product.image_url ? (
+                <Image
+                  src={product.image_url}
+                  alt={product.name}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="object-cover"
+                  priority
+                />
+              ) : (
+                <div
+                  className="absolute inset-0"
+                  style={{ background: product.image_gradient }}
+                />
+              )}
 
               {/* Category badge */}
-              <div className="absolute top-4 left-4 px-4 py-1.5 bg-white/20 backdrop-blur-sm rounded-full">
-                <span className="font-body text-white text-xs font-medium tracking-wider uppercase">{product.category}</span>
+              <div className="absolute top-4 left-4 px-4 py-1.5 bg-white/90 backdrop-blur-sm rounded-full shadow-sm">
+                <span className="font-body text-maroon-900 text-xs font-semibold tracking-wider uppercase">{product.category}</span>
               </div>
 
               {/* Discount badge */}
               {discount > 0 && (
-                <div className="absolute top-4 right-4 w-14 h-14 bg-gold-500 rounded-full flex items-center justify-center">
+                <div className="absolute top-4 right-4 w-14 h-14 bg-gold-500 rounded-full flex items-center justify-center shadow-md">
                   <span className="font-body text-maroon-900 text-xs font-bold">-{discount}%</span>
                 </div>
               )}
-
-              {/* Center decorative element */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center text-white/90">
-                  <div className="w-20 h-20 mx-auto mb-4 border-2 border-white/30 rounded-full flex items-center justify-center">
-                    <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                  </div>
-                  <p className="font-display text-2xl font-bold">{product.category}</p>
-                  <p className="font-body text-sm text-white/60 mt-1">{product.gender}</p>
-                </div>
-              </div>
             </div>
           </div>
 

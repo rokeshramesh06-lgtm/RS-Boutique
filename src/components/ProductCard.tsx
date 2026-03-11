@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Product } from '@/types';
 import { useCart } from '@/context/CartContext';
 
@@ -44,14 +45,24 @@ export default function ProductCard({ product }: ProductCardProps) {
       <div className="relative overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-500 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-maroon-900/10">
         {/* Image Area */}
         <div className="relative aspect-[4/5] overflow-hidden">
-          {/* Gradient Background */}
-          <div
-            className="absolute inset-0"
-            style={{ background: product.image_gradient }}
-          />
-
-          {/* Decorative Pattern Overlay */}
-          <div className="pattern-overlay absolute inset-0 opacity-60" />
+          {/* Product Image */}
+          {product.image_url ? (
+            <Image
+              src={product.image_url}
+              alt={product.name}
+              fill
+              sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              className="object-cover transition-transform duration-700 group-hover:scale-110"
+            />
+          ) : (
+            <>
+              <div
+                className="absolute inset-0"
+                style={{ background: product.image_gradient }}
+              />
+              <div className="pattern-overlay absolute inset-0 opacity-60" />
+            </>
+          )}
 
           {/* Subtle Vignette */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />

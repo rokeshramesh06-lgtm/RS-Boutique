@@ -36,6 +36,7 @@ interface ProductForm {
   gender: string;
   sizes: string[];
   colors: string;
+  image_url: string;
   image_gradient: string;
   in_stock: boolean;
   featured: boolean;
@@ -54,7 +55,7 @@ interface CouponForm {
 const emptyProductForm: ProductForm = {
   name: '', description: '', price: '', original_price: '',
   category: 'Sarees', gender: 'Women', sizes: ['M'],
-  colors: '', image_gradient: '#8B1A1A to #C9A84C',
+  colors: '', image_url: '', image_gradient: '#8B1A1A to #C9A84C',
   in_stock: true, featured: false,
 };
 
@@ -144,6 +145,7 @@ export default function AdminPage() {
       gender: productForm.gender,
       sizes: productForm.sizes.join(', '),
       colors: productForm.colors,
+      image_url: productForm.image_url,
       image_gradient: productForm.image_gradient,
       in_stock: productForm.in_stock ? 1 : 0,
       featured: productForm.featured ? 1 : 0,
@@ -184,6 +186,7 @@ export default function AdminPage() {
       gender: product.gender,
       sizes: product.sizes.split(',').map((s) => s.trim()),
       colors: product.colors,
+      image_url: product.image_url || '',
       image_gradient: product.image_gradient,
       in_stock: product.in_stock === 1,
       featured: product.featured === 1,
@@ -573,7 +576,25 @@ export default function AdminPage() {
                         </div>
 
                         <div>
-                          <label className="font-body text-sm font-medium text-gray-700 mb-1.5 block">Image Gradient</label>
+                          <label className="font-body text-sm font-medium text-gray-700 mb-1.5 block">Image URL</label>
+                          <input
+                            type="text"
+                            value={productForm.image_url}
+                            onChange={(e) => setProductForm({ ...productForm, image_url: e.target.value })}
+                            placeholder="https://images.unsplash.com/photo-..."
+                            className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-gold-500 transition-all"
+                          />
+                          {productForm.image_url && (
+                            <img
+                              src={productForm.image_url}
+                              alt="Preview"
+                              className="mt-2 h-20 w-20 object-cover rounded-lg"
+                            />
+                          )}
+                        </div>
+
+                        <div>
+                          <label className="font-body text-sm font-medium text-gray-700 mb-1.5 block">Fallback Gradient</label>
                           <input
                             type="text"
                             value={productForm.image_gradient}
@@ -652,10 +673,13 @@ export default function AdminPage() {
                             <td className="px-4 py-3 font-body text-sm text-gray-500">#{product.id}</td>
                             <td className="px-4 py-3">
                               <div className="flex items-center gap-3">
-                                <div
-                                  className="w-8 h-8 rounded-md flex-shrink-0"
-                                  style={{ background: `linear-gradient(135deg, ${product.image_gradient.replace(' to ', ', ')})` }}
-                                />
+                                <div className="w-8 h-8 rounded-md flex-shrink-0 overflow-hidden">
+                                  {product.image_url ? (
+                                    <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
+                                  ) : (
+                                    <div className="w-full h-full" style={{ background: product.image_gradient }} />
+                                  )}
+                                </div>
                                 <span className="font-body text-sm font-medium text-maroon-900 truncate max-w-[200px]">{product.name}</span>
                               </div>
                             </td>

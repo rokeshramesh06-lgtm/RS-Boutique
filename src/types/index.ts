@@ -12,6 +12,7 @@ export interface Product {
   description: string;
   price: number;
   original_price: number;
+  image_url: string;
   image_gradient: string;
   category: string;
   gender: 'Men' | 'Women' | 'Unisex';

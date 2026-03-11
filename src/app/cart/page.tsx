@@ -139,16 +139,20 @@ export default function CartPage() {
                 key={`${item.product.id}-${item.size}-${item.color}`}
                 className="bg-white rounded-xl p-4 md:p-6 shadow-sm flex gap-4 md:gap-6 items-start"
               >
-                {/* Product Gradient Thumbnail */}
-                <div
-                  className="w-20 h-20 md:w-28 md:h-28 rounded-lg flex-shrink-0 relative overflow-hidden"
-                  style={{ background: `linear-gradient(135deg, ${item.product.image_gradient.replace(' to ', ', ')})` }}
-                >
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="font-display text-white/80 text-xs font-bold text-center leading-tight px-1">
-                      {item.product.category}
-                    </span>
-                  </div>
+                {/* Product Thumbnail */}
+                <div className="w-20 h-20 md:w-28 md:h-28 rounded-lg flex-shrink-0 relative overflow-hidden">
+                  {item.product.image_url ? (
+                    <img
+                      src={item.product.image_url}
+                      alt={item.product.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div
+                      className="w-full h-full"
+                      style={{ background: item.product.image_gradient }}
+                    />
+                  )}
                 </div>
 
                 {/* Info */}

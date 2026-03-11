@@ -54,6 +54,7 @@ export async function POST(request: NextRequest) {
       description,
       price,
       original_price,
+      image_url,
       image_gradient,
       category,
       gender,
@@ -63,7 +64,7 @@ export async function POST(request: NextRequest) {
       featured,
     } = await request.json();
 
-    if (!name || !description || !price || !original_price || !image_gradient || !category || !gender) {
+    if (!name || !description || !price || !original_price || !category || !gender) {
       return NextResponse.json(
         { error: 'All required fields must be provided' },
         { status: 400 }
@@ -73,14 +74,15 @@ export async function POST(request: NextRequest) {
     const db = getDb();
 
     const result = db.prepare(
-      `INSERT INTO products (name, description, price, original_price, image_gradient, category, gender, sizes, colors, in_stock, featured)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      `INSERT INTO products (name, description, price, original_price, image_url, image_gradient, category, gender, sizes, colors, in_stock, featured)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     ).run(
       name,
       description,
       price,
       original_price,
-      image_gradient,
+      image_url || '',
+      image_gradient || '',
       category,
       gender,
       sizes || '[]',
