@@ -42,7 +42,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Link href={`/product/${product.id}`} className="group block">
-      <div className="relative overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-500 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-maroon-200/50">
+      <div className="relative overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-500 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-maroon-900/10">
         {/* Image Area */}
         <div className="relative aspect-[4/5] overflow-hidden">
           {/* Product Image */}
@@ -77,17 +77,17 @@ export default function ProductCard({ product }: ProductCardProps) {
           {/* Discount Badge */}
           {discount > 0 && (
             <div className="absolute right-3 top-3 z-10">
-              <span className="inline-flex items-center rounded-full bg-rose-500 px-2.5 py-1 font-body text-[10px] font-bold text-white shadow-sm">
+              <span className="inline-flex items-center rounded-full bg-maroon-800 px-2.5 py-1 font-body text-[10px] font-bold text-white shadow-sm">
                 -{discount}%
               </span>
             </div>
           )}
 
           {/* Hover Overlay with Quick Add */}
-          <div className="absolute inset-0 flex items-end justify-center bg-black/0 pb-16 transition-all duration-500 group-hover:bg-black/10">
+          <div className="absolute inset-0 flex items-end justify-center bg-maroon-900/0 pb-16 transition-all duration-500 group-hover:bg-maroon-900/20">
             <button
               onClick={handleQuickAdd}
-              className="translate-y-4 rounded-lg bg-white/95 px-6 py-2.5 font-body text-xs font-semibold uppercase tracking-wider text-maroon-900 opacity-0 shadow-lg backdrop-blur-sm transition-all duration-300 hover:bg-maroon-900 hover:text-white group-hover:translate-y-0 group-hover:opacity-100"
+              className="translate-y-4 rounded-lg bg-white/95 px-6 py-2.5 font-body text-xs font-semibold uppercase tracking-wider text-maroon-900 opacity-0 shadow-lg backdrop-blur-sm transition-all duration-300 hover:bg-gold-500 hover:text-maroon-950 group-hover:translate-y-0 group-hover:opacity-100"
             >
               Add to Cart
             </button>
@@ -121,7 +121,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           )}
 
           {/* View Details Link */}
-          <div className="mt-3 flex items-center gap-1 font-body text-xs font-medium uppercase tracking-wider text-maroon-500 transition-colors group-hover:text-maroon-700">
+          <div className="mt-3 flex items-center gap-1 font-body text-xs font-medium uppercase tracking-wider text-gold-600 transition-colors group-hover:text-gold-500">
             <span>View Details</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"

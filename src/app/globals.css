@@ -11,7 +11,7 @@ html {
 
 body {
   font-family: 'Jost', sans-serif;
-  background-color: #FFFFFF;
+  background-color: #FDF8F3;
   color: #1A1A1A;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -19,13 +19,13 @@ body {
 
 /* ===== Selection Colors ===== */
 ::selection {
-  background-color: #fce7ea;
-  color: #6B0F1A;
+  background-color: #8b1e3e;
+  color: #e4c563;
 }
 
 ::-moz-selection {
-  background-color: #fce7ea;
-  color: #6B0F1A;
+  background-color: #8b1e3e;
+  color: #e4c563;
 }
 
 /* ===== Custom Scrollbar ===== */
@@ -35,22 +35,22 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #fdf2f4;
+  background: #F5EDE4;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #e97a90;
+  background: #C9A84C;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #db4d6d;
+  background: #b08a30;
 }
 
 /* Firefox scrollbar */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #e97a90 #fdf2f4;
+  scrollbar-color: #C9A84C #F5EDE4;
 }
 
 /* ===== Decorative Ornament ===== */
@@ -71,23 +71,23 @@ body {
   top: 50%;
   height: 1px;
   width: calc(50% - 20px);
-  background: linear-gradient(90deg, transparent, #e97a90);
+  background: linear-gradient(90deg, transparent, #C9A84C);
 }
 
 .ornament::before {
   left: 0;
-  background: linear-gradient(90deg, transparent, #e97a90);
+  background: linear-gradient(90deg, transparent, #C9A84C);
 }
 
 .ornament::after {
   right: 0;
-  background: linear-gradient(270deg, transparent, #e97a90);
+  background: linear-gradient(270deg, transparent, #C9A84C);
 }
 
 .ornament-diamond {
   width: 10px;
   height: 10px;
-  background-color: #e97a90;
+  background-color: #C9A84C;
   transform: rotate(45deg);
   z-index: 1;
   flex-shrink: 0;
@@ -95,7 +95,7 @@ body {
 
 /* ===== Gold Gradient Text ===== */
 .gradient-text {
-  background: linear-gradient(135deg, #db4d6d 0%, #e97a90 40%, #f2aab7 60%, #db4d6d 100%);
+  background: linear-gradient(135deg, #C9A84C 0%, #e4c563 40%, #d4b96a 60%, #C9A84C 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -225,24 +225,24 @@ input[type='range']::-webkit-slider-thumb {
   appearance: none;
   width: 18px;
   height: 18px;
-  background: linear-gradient(135deg, #e97a90, #f2aab7);
-  border: 2px solid #FFFFFF;
+  background: linear-gradient(135deg, #C9A84C, #e4c563);
+  border: 2px solid #FDF8F3;
   border-radius: 50%;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(219, 77, 109, 0.2);
+  box-shadow: 0 2px 6px rgba(107, 15, 26, 0.2);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 input[type='range']::-webkit-slider-thumb:hover {
   transform: scale(1.15);
-  box-shadow: 0 3px 10px rgba(219, 77, 109, 0.3);
+  box-shadow: 0 3px 10px rgba(107, 15, 26, 0.3);
 }
 
 input[type='range']::-moz-range-thumb {
   width: 18px;
   height: 18px;
-  background: linear-gradient(135deg, #e97a90, #f2aab7);
-  border: 2px solid #FFFFFF;
+  background: linear-gradient(135deg, #C9A84C, #e4c563);
+  border: 2px solid #FDF8F3;
   border-radius: 50%;
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(107, 15, 26, 0.2);

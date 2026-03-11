@@ -44,15 +44,15 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center px-4 py-12 relative overflow-hidden">
+    <div className="min-h-screen bg-ivory-100 flex items-center justify-center px-4 py-12 relative overflow-hidden">
       {/* Decorative background */}
       <div className="absolute inset-0 opacity-[0.02]" style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23e97a90' fill-opacity='1'%3E%3Cpath d='M30 0L60 30L30 60L0 30z' fill='none' stroke='%23e97a90' stroke-width='1'/%3E%3C/g%3E%3C/svg%3E")`,
+        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%236B0F1A' fill-opacity='1'%3E%3Cpath d='M30 0L60 30L30 60L0 30z' fill='none' stroke='%236B0F1A' stroke-width='1'/%3E%3C/g%3E%3C/svg%3E")`,
       }} />
 
       {/* Decorative corners */}
-      <div className="absolute top-8 left-8 w-32 h-32 border-t border-l border-maroon-200 hidden md:block" />
-      <div className="absolute bottom-8 right-8 w-32 h-32 border-b border-r border-maroon-200 hidden md:block" />
+      <div className="absolute top-8 left-8 w-32 h-32 border-t border-l border-maroon-900/10 hidden md:block" />
+      <div className="absolute bottom-8 right-8 w-32 h-32 border-b border-r border-maroon-900/10 hidden md:block" />
 
       <div className="w-full max-w-md relative z-10">
         <div className="bg-white rounded-2xl shadow-lg p-8 md:p-10">
@@ -65,11 +65,11 @@ export default function SignupPage() {
             </Link>
 
             <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="w-8 h-[1px] bg-maroon-300" />
-              <svg className="w-3 h-3 text-maroon-300" viewBox="0 0 24 24" fill="currentColor">
+              <div className="w-8 h-[1px] bg-gold-500" />
+              <svg className="w-3 h-3 text-gold-500" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" />
               </svg>
-              <div className="w-8 h-[1px] bg-maroon-300" />
+              <div className="w-8 h-[1px] bg-gold-500" />
             </div>
 
             <h1 className="font-display text-2xl font-bold text-maroon-900 mb-1">Join RS Boutique</h1>
@@ -94,7 +94,7 @@ export default function SignupPage() {
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Enter your full name"
                   required
-                  className="w-full px-4 py-3 pl-11 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-maroon-500 focus:ring-1 focus:ring-maroon-500/20 transition-all"
+                  className="w-full px-4 py-3 pl-11 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500/30 transition-all"
                 />
                 <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -111,7 +111,7 @@ export default function SignupPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your@email.com"
                   required
-                  className="w-full px-4 py-3 pl-11 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-maroon-500 focus:ring-1 focus:ring-maroon-500/20 transition-all"
+                  className="w-full px-4 py-3 pl-11 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500/30 transition-all"
                 />
                 <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -129,7 +129,7 @@ export default function SignupPage() {
                   placeholder="At least 6 characters"
                   required
                   minLength={6}
-                  className="w-full px-4 py-3 pl-11 pr-11 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-maroon-500 focus:ring-1 focus:ring-maroon-500/20 transition-all"
+                  className="w-full px-4 py-3 pl-11 pr-11 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500/30 transition-all"
                 />
                 <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -165,7 +165,7 @@ export default function SignupPage() {
                   className={`w-full px-4 py-3 pl-11 border rounded-lg font-body text-sm focus:outline-none focus:ring-1 transition-all ${
                     confirmPassword && password !== confirmPassword
                       ? 'border-red-300 focus:border-red-500 focus:ring-red-500/30'
-                      : 'border-ivory-300 focus:border-maroon-500 focus:ring-maroon-500/20'
+                      : 'border-ivory-300 focus:border-gold-500 focus:ring-gold-500/30'
                   }`}
                 />
                 <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -180,7 +180,7 @@ export default function SignupPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 bg-maroon-700 text-white font-body font-semibold text-sm tracking-wide uppercase rounded-lg hover:bg-maroon-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full py-3.5 bg-maroon-900 text-white font-body font-semibold text-sm tracking-wide uppercase rounded-lg hover:bg-maroon-800 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -202,7 +202,7 @@ export default function SignupPage() {
             </div>
             <p className="font-body text-sm text-gray-500">
               Already have an account?{' '}
-              <Link href="/auth/login" className="text-maroon-900 font-semibold hover:text-maroon-600 transition-colors">
+              <Link href="/auth/login" className="text-maroon-900 font-semibold hover:text-gold-600 transition-colors">
                 Sign In
               </Link>
             </p>

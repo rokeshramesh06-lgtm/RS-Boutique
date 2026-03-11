@@ -87,9 +87,9 @@ export default function Navbar() {
       <nav
         className={`fixed top-0 left-0 right-0 z-50 h-[70px] transition-all duration-300 ${
           scrolled
-            ? 'bg-ivory-100/95 shadow-lg shadow-maroon-100/50'
+            ? 'bg-ivory-100/95 shadow-lg shadow-maroon-900/5'
             : 'bg-ivory-100/80'
-        } backdrop-blur-md border-b border-maroon-100`}
+        } backdrop-blur-md border-b border-gold-200/30`}
       >
         <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           {/* Logo */}
@@ -116,11 +116,11 @@ export default function Navbar() {
               >
                 {link.label}
                 <span
-                  className={`absolute -bottom-1 left-0 h-[2px] bg-maroon-500 transition-all duration-300 ${
+                  className={`absolute -bottom-1 left-0 h-[2px] bg-gold-500 transition-all duration-300 ${
                     isActive(link.href) ? 'w-full' : 'w-0 group-hover:w-full'
                   }`}
                 />
-                <span className="absolute -bottom-1 left-0 h-[2px] w-0 bg-maroon-500 transition-all duration-300 hover:w-full" />
+                <span className="absolute -bottom-1 left-0 h-[2px] w-0 bg-gold-500 transition-all duration-300 hover:w-full" />
               </Link>
             ))}
           </div>
@@ -130,7 +130,7 @@ export default function Navbar() {
             {/* Search Icon */}
             <Link
               href="/shop"
-              className="rounded-full p-2 text-maroon-900/70 transition-colors hover:bg-maroon-50 hover:text-maroon-900"
+              className="rounded-full p-2 text-maroon-900/70 transition-colors hover:bg-gold-100 hover:text-maroon-900"
               aria-label="Search products"
             >
               <svg
@@ -153,7 +153,7 @@ export default function Navbar() {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                className="rounded-full p-2 text-maroon-900/70 transition-colors hover:bg-maroon-50 hover:text-maroon-900"
+                className="rounded-full p-2 text-maroon-900/70 transition-colors hover:bg-gold-100 hover:text-maroon-900"
                 aria-label="User menu"
               >
                 <svg
@@ -174,7 +174,7 @@ export default function Navbar() {
 
               {/* Dropdown Menu */}
               {userDropdownOpen && (
-                <div className="animate-scale-in absolute right-0 top-full mt-2 w-56 origin-top-right rounded-lg border border-maroon-100 bg-white py-2 shadow-xl shadow-gray-200">
+                <div className="animate-scale-in absolute right-0 top-full mt-2 w-56 origin-top-right rounded-lg border border-gold-200/50 bg-white py-2 shadow-xl shadow-maroon-900/10">
                   {user ? (
                     <>
                       <div className="border-b border-ivory-200 px-4 py-3">
@@ -303,7 +303,7 @@ export default function Navbar() {
             {/* Cart Icon */}
             <Link
               href="/cart"
-              className="relative rounded-full p-2 text-maroon-900/70 transition-colors hover:bg-maroon-50 hover:text-maroon-900"
+              className="relative rounded-full p-2 text-maroon-900/70 transition-colors hover:bg-gold-100 hover:text-maroon-900"
               aria-label="Shopping cart"
             >
               <svg
@@ -321,7 +321,7 @@ export default function Navbar() {
                 />
               </svg>
               {itemCount > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-maroon-600 text-[10px] font-semibold text-white animate-scale-in">
+                <span className="absolute -right-0.5 -top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-maroon-800 text-[10px] font-semibold text-white animate-scale-in">
                   {itemCount > 99 ? '99+' : itemCount}
                 </span>
               )}
@@ -330,7 +330,7 @@ export default function Navbar() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="rounded-full p-2 text-maroon-900/70 transition-colors hover:bg-maroon-50 hover:text-maroon-900 md:hidden"
+              className="rounded-full p-2 text-maroon-900/70 transition-colors hover:bg-gold-100 hover:text-maroon-900 md:hidden"
               aria-label="Toggle menu"
             >
               <svg
@@ -365,14 +365,14 @@ export default function Navbar() {
         <div className="fixed inset-0 z-[60] md:hidden">
           {/* Backdrop */}
           <div
-            className="absolute inset-0 bg-black/20 backdrop-blur-sm animate-fade-in"
+            className="absolute inset-0 bg-maroon-900/40 backdrop-blur-sm animate-fade-in"
             onClick={() => setMobileMenuOpen(false)}
           />
 
           {/* Slide-in Drawer */}
           <div className="absolute right-0 top-0 h-full w-80 max-w-[85vw] bg-ivory-100 shadow-2xl animate-slide-in-right">
             {/* Drawer Header */}
-            <div className="flex items-center justify-between border-b border-maroon-100 px-6 py-5">
+            <div className="flex items-center justify-between border-b border-gold-200/30 px-6 py-5">
               <Link
                 href="/"
                 className="flex items-baseline gap-1"
@@ -422,12 +422,12 @@ export default function Navbar() {
                 >
                   {link.label}
                   {isActive(link.href) && (
-                    <span className="ml-2 inline-block h-1.5 w-1.5 rounded-full bg-maroon-500" />
+                    <span className="ml-2 inline-block h-1.5 w-1.5 rounded-full bg-gold-500" />
                   )}
                 </Link>
               ))}
 
-              <div className="my-3 border-t border-maroon-100" />
+              <div className="my-3 border-t border-gold-200/30" />
 
               {user ? (
                 <>
@@ -484,7 +484,7 @@ export default function Navbar() {
             </div>
 
             {/* Drawer Footer */}
-            <div className="absolute bottom-0 left-0 right-0 border-t border-maroon-100 bg-maroon-50/50 px-6 py-4">
+            <div className="absolute bottom-0 left-0 right-0 border-t border-gold-200/30 bg-ivory-200/50 px-6 py-4">
               <p className="text-center text-xs text-[#6B6B6B]">
                 Women&apos;s Indian Fashion
               </p>

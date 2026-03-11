@@ -68,23 +68,23 @@ function ShopContent() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-ivory-100">
       {/* Page Header */}
-      <div className="bg-gradient-to-br from-maroon-50 via-white to-rose-50 border-b border-maroon-100 py-12 px-4">
+      <div className="bg-gradient-to-r from-maroon-900 via-maroon-800 to-maroon-900 py-12 px-4">
         <div className="max-w-7xl mx-auto">
           {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-gray-400 font-body text-sm mb-4">
-            <Link href="/" className="hover:text-maroon-700 transition-colors">Home</Link>
+          <div className="flex items-center gap-2 text-ivory-200/60 font-body text-sm mb-4">
+            <Link href="/" className="hover:text-gold-400 transition-colors">Home</Link>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-            <span className="text-maroon-700">Shop</span>
+            <span className="text-gold-400">Shop</span>
           </div>
 
-          <h1 className="font-display text-4xl md:text-5xl font-bold text-maroon-900 mb-2">
+          <h1 className="font-display text-4xl md:text-5xl font-bold text-white mb-2">
             Our Collection
           </h1>
-          <p className="font-body text-gray-500 text-sm">
+          <p className="font-body text-ivory-200/70 text-sm">
             Discover the finest women&apos;s Indian fashion — sarees, churidars, and nightwear.
           </p>
         </div>
@@ -132,7 +132,7 @@ function ShopContent() {
 
             <button
               onClick={() => setFilterOpen(true)}
-              className="lg:hidden flex items-center gap-2 px-4 py-3 bg-maroon-700 text-white rounded-lg font-body text-sm hover:bg-maroon-600 transition-colors"
+              className="lg:hidden flex items-center gap-2 px-4 py-3 bg-maroon-900 text-white rounded-lg font-body text-sm hover:bg-maroon-800 transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
@@ -221,11 +221,11 @@ function ShopContent() {
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                 {[...Array(8)].map((_, i) => (
                   <div key={i} className="bg-white rounded-lg overflow-hidden animate-pulse">
-                    <div className="h-56 md:h-72 bg-gray-100" />
+                    <div className="h-56 md:h-72 bg-ivory-300" />
                     <div className="p-4 space-y-3">
-                      <div className="h-3 bg-gray-100 rounded w-2/3" />
-                      <div className="h-3 bg-gray-100 rounded w-1/2" />
-                      <div className="h-5 bg-gray-100 rounded w-1/3" />
+                      <div className="h-3 bg-ivory-300 rounded w-2/3" />
+                      <div className="h-3 bg-ivory-300 rounded w-1/2" />
+                      <div className="h-5 bg-ivory-300 rounded w-1/3" />
                     </div>
                   </div>
                 ))}
@@ -239,7 +239,7 @@ function ShopContent() {
                 <p className="font-body text-gray-500 mb-6">Try adjusting your filters or search term.</p>
                 <button
                   onClick={handleReset}
-                  className="px-6 py-2.5 bg-maroon-700 text-white font-body text-sm rounded-lg hover:bg-maroon-600 transition-colors"
+                  className="px-6 py-2.5 bg-maroon-900 text-white font-body text-sm rounded-lg hover:bg-maroon-800 transition-colors"
                 >
                   Reset Filters
                 </button>
@@ -261,8 +261,8 @@ function ShopContent() {
 export default function ShopPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-maroon-600" />
+      <div className="min-h-screen bg-ivory-100 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-maroon-900" />
       </div>
     }>
       <ShopContent />
