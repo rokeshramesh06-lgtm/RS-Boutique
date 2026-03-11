@@ -11,17 +11,17 @@ const FEATURED_CATEGORIES = [
   {
     name: 'Sarees',
     desc: 'Timeless drapes of elegance',
-    image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=800&q=80',
+    image: 'https://images.pexels.com/photos/7442282/pexels-photo-7442282.jpeg?auto=compress&cs=tinysrgb&w=800',
   },
   {
     name: 'Churidar',
     desc: 'Graceful ethnic charm',
-    image: 'https://images.unsplash.com/photo-1583391733975-dea78d273247?w=800&q=80',
+    image: 'https://images.pexels.com/photos/1149962/pexels-photo-1149962.jpeg?auto=compress&cs=tinysrgb&w=800',
   },
   {
     name: 'Nighty',
     desc: 'Comfort meets elegance',
-    image: 'https://images.unsplash.com/photo-1616001655906-dba290767af0?w=800&q=80',
+    image: 'https://images.pexels.com/photos/6976434/pexels-photo-6976434.jpeg?auto=compress&cs=tinysrgb&w=800',
   },
 ];
 
