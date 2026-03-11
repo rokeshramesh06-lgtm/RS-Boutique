@@ -31,7 +31,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="mt-4 max-w-xs font-body text-sm leading-relaxed text-gray-500">
-              Celebrating the artistry of Indian fashion since 2020. We bring
+              Celebrating the artistry of Indian fashion since 2025. We bring
               you handcrafted garments that blend timeless tradition with
               contemporary elegance, using the finest fabrics and meticulous
               craftsmanship.
