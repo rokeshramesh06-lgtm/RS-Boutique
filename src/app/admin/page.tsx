@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { Product, Coupon, Order } from '@/types';
+import Image from 'next/image';
 
 const formatPrice = (price: number) => '₹' + price.toLocaleString('en-IN');
 const CATEGORIES = ['Sarees', 'Churidar', 'Nighty'];
@@ -82,6 +83,11 @@ export default function AdminPage() {
   const [productSaving, setProductSaving] = useState(false);
   const [productError, setProductError] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
+
+  // Image upload
+  const [uploading, setUploading] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Coupon form
   const [showCouponForm, setShowCouponForm] = useState(false);
@@ -253,6 +259,50 @@ export default function AdminPage() {
       fetchData();
     } catch {
       // Handle silently
+    }
+  };
+
+  // Image upload handler
+  const handleImageUpload = async (file: File) => {
+    setUploading(true);
+    setProductError('');
+
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const res = await fetch('/api/admin/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Upload failed');
+      }
+
+      setProductForm((prev) => ({ ...prev, image_url: data.url }));
+    } catch (err: unknown) {
+      setProductError(err instanceof Error ? err.message : 'Upload failed');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      handleImageUpload(file);
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleImageUpload(file);
     }
   };
 
@@ -576,21 +626,88 @@ export default function AdminPage() {
                         </div>
 
                         <div>
-                          <label className="font-body text-sm font-medium text-gray-700 mb-1.5 block">Image URL</label>
-                          <input
-                            type="text"
-                            value={productForm.image_url}
-                            onChange={(e) => setProductForm({ ...productForm, image_url: e.target.value })}
-                            placeholder="https://images.unsplash.com/photo-..."
-                            className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-maroon-500 transition-all"
-                          />
+                          <label className="font-body text-sm font-medium text-gray-700 mb-1.5 block">Product Image</label>
+
+                          {/* Image preview */}
                           {productForm.image_url && (
-                            <img
-                              src={productForm.image_url}
-                              alt="Preview"
-                              className="mt-2 h-20 w-20 object-cover rounded-lg"
-                            />
+                            <div className="mb-3 relative inline-block">
+                              <Image
+                                src={productForm.image_url}
+                                alt="Preview"
+                                width={120}
+                                height={120}
+                                className="h-28 w-28 object-cover rounded-xl border border-ivory-300"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setProductForm({ ...productForm, image_url: '' })}
+                                className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
+                              >
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              </button>
+                            </div>
                           )}
+
+                          {/* Upload area */}
+                          {!productForm.image_url && (
+                            <div
+                              onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                              onDragLeave={() => setDragOver(false)}
+                              onDrop={handleDrop}
+                              onClick={() => fileInputRef.current?.click()}
+                              className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all ${
+                                dragOver
+                                  ? 'border-maroon-500 bg-maroon-50'
+                                  : 'border-ivory-300 hover:border-maroon-300 hover:bg-ivory-100/50'
+                              } ${uploading ? 'opacity-60 pointer-events-none' : ''}`}
+                            >
+                              <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/jpeg,image/png,image/webp,image/gif"
+                                onChange={handleFileSelect}
+                                className="hidden"
+                              />
+                              {uploading ? (
+                                <div className="flex flex-col items-center gap-2">
+                                  <div className="w-8 h-8 border-2 border-maroon-300 border-t-maroon-700 rounded-full animate-spin" />
+                                  <p className="font-body text-sm text-maroon-700">Uploading...</p>
+                                </div>
+                              ) : (
+                                <div className="flex flex-col items-center gap-2">
+                                  <div className="w-12 h-12 bg-maroon-50 rounded-xl flex items-center justify-center">
+                                    <svg className="w-6 h-6 text-maroon-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                  </div>
+                                  <div>
+                                    <p className="font-body text-sm font-medium text-maroon-900">
+                                      Drop image here or <span className="text-maroon-600 underline">browse</span>
+                                    </p>
+                                    <p className="font-body text-xs text-gray-400 mt-0.5">JPEG, PNG, WebP, GIF up to 5MB</p>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Or use URL */}
+                          <div className="mt-3">
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className="flex-1 h-[1px] bg-ivory-300" />
+                              <span className="font-body text-xs text-gray-400">or paste URL</span>
+                              <div className="flex-1 h-[1px] bg-ivory-300" />
+                            </div>
+                            <input
+                              type="text"
+                              value={productForm.image_url}
+                              onChange={(e) => setProductForm({ ...productForm, image_url: e.target.value })}
+                              placeholder="https://images.pexels.com/photos/..."
+                              className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-maroon-500 transition-all"
+                            />
+                          </div>
                         </div>
 
                         <div>
@@ -673,9 +790,9 @@ export default function AdminPage() {
                             <td className="px-4 py-3 font-body text-sm text-gray-500">#{product.id}</td>
                             <td className="px-4 py-3">
                               <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-md flex-shrink-0 overflow-hidden">
+                                <div className="w-10 h-10 rounded-lg flex-shrink-0 overflow-hidden border border-ivory-300">
                                   {product.image_url ? (
-                                    <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
+                                    <Image src={product.image_url} alt={product.name} width={40} height={40} className="w-full h-full object-cover" />
                                   ) : (
                                     <div className="w-full h-full" style={{ background: product.image_gradient }} />
                                   )}
