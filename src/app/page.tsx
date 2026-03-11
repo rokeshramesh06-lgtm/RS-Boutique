@@ -11,7 +11,7 @@ const FEATURED_CATEGORIES = [
   {
     name: 'Sarees',
     desc: 'Timeless drapes of elegance',
-    image: 'https://images.pexels.com/photos/7442282/pexels-photo-7442282.jpeg?auto=compress&cs=tinysrgb&w=800',
+    image: 'https://images.pexels.com/photos/28943572/pexels-photo-28943572.jpeg?auto=compress&cs=tinysrgb&w=800',
   },
   {
     name: 'Churidar',
@@ -21,7 +21,7 @@ const FEATURED_CATEGORIES = [
   {
     name: 'Nighty',
     desc: 'Comfort meets elegance',
-    image: 'https://images.pexels.com/photos/6976434/pexels-photo-6976434.jpeg?auto=compress&cs=tinysrgb&w=800',
+    image: 'https://images.pexels.com/photos/8640026/pexels-photo-8640026.jpeg?auto=compress&cs=tinysrgb&w=800',
   },
 ];
 
