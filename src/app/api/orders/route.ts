@@ -89,10 +89,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Insert order items
-    const orderItems = items.map((item: { productId: number; productName: string; quantity: number; size: string; color: string; price: number }) => ({
+    const orderItems = items.map((item: { product_id: number; product_name: string; quantity: number; size: string; color: string; price: number }) => ({
       order_id: order.id,
-      product_id: item.productId,
-      product_name: item.productName,
+      product_id: item.product_id,
+      product_name: item.product_name,
       quantity: item.quantity,
       size: item.size,
       color: item.color,
