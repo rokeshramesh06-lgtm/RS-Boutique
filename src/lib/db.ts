@@ -1,14 +1,21 @@
 import { DatabaseSync } from 'node:sqlite';
 import path from 'path';
-import { existsSync } from 'fs';
+import { existsSync, mkdirSync } from 'fs';
+import { seedDatabase } from './seed';
 
-// Use /tmp on Vercel (read-only filesystem), project root locally
-const DB_PATH = process.env.VERCEL
-  ? '/tmp/rs-boutique.db'
-  : path.join(process.cwd(), 'rs-boutique.db');
+// Determine writable path for SQLite database
+function getDbPath(): string {
+  // Try /tmp first (works on Vercel, Lambda, etc.)
+  if (existsSync('/tmp')) {
+    return '/tmp/rs-boutique.db';
+  }
+  // Fallback to project root (local development)
+  return path.join(process.cwd(), 'rs-boutique.db');
+}
+
+const DB_PATH = getDbPath();
 
 let db: DatabaseSync;
-let seeded = false;
 
 export function getDb(): DatabaseSync {
   if (!db) {
@@ -18,23 +25,16 @@ export function getDb(): DatabaseSync {
     db.exec('PRAGMA foreign_keys = ON');
     initializeDb(db);
 
-    // Auto-seed on Vercel since /tmp is ephemeral and resets on cold starts
-    if (isNew && !seeded) {
-      seeded = true;
-      autoSeed();
+    // Auto-seed when database is freshly created
+    if (isNew) {
+      try {
+        seedDatabase();
+      } catch (e) {
+        console.error('Auto-seed failed:', e);
+      }
     }
   }
   return db;
-}
-
-function autoSeed() {
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { seedDatabase } = require('./seed');
-    seedDatabase();
-  } catch {
-    // seed will happen via /api/seed fallback
-  }
 }
 
 function initializeDb(db: DatabaseSync) {
