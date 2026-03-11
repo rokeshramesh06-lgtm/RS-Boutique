@@ -87,17 +87,17 @@ export default function Navbar() {
       <nav
         className={`fixed top-0 left-0 right-0 z-50 h-[70px] transition-all duration-300 ${
           scrolled
-            ? 'bg-ivory-100/95 shadow-lg shadow-maroon-900/5'
-            : 'bg-ivory-100/80'
-        } backdrop-blur-md border-b border-gold-200/30`}
+            ? 'bg-red-700/95 shadow-lg shadow-red-900/20'
+            : 'bg-red-700/90'
+        } backdrop-blur-md border-b border-red-800/50`}
       >
         <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           {/* Logo */}
           <Link href="/" className="group flex items-baseline gap-1">
-            <span className="font-display text-3xl font-bold tracking-wide text-maroon-900 transition-colors group-hover:text-maroon-800">
+            <span className="font-display text-3xl font-bold tracking-wide text-white transition-colors group-hover:text-ivory-200">
               RS
             </span>
-            <span className="font-display text-sm font-medium tracking-[0.2em] text-gold-500 uppercase">
+            <span className="font-display text-sm font-medium tracking-[0.2em] text-gold-300 uppercase">
               Boutique
             </span>
           </Link>
@@ -110,17 +110,17 @@ export default function Navbar() {
                 href={link.href}
                 className={`relative py-1 font-body text-sm font-medium tracking-wide uppercase transition-colors duration-200 ${
                   isActive(link.href)
-                    ? 'text-maroon-900'
-                    : 'text-[#6B6B6B] hover:text-maroon-800'
+                    ? 'text-white'
+                    : 'text-white/70 hover:text-white'
                 }`}
               >
                 {link.label}
                 <span
-                  className={`absolute -bottom-1 left-0 h-[2px] bg-gold-500 transition-all duration-300 ${
+                  className={`absolute -bottom-1 left-0 h-[2px] bg-gold-300 transition-all duration-300 ${
                     isActive(link.href) ? 'w-full' : 'w-0 group-hover:w-full'
                   }`}
                 />
-                <span className="absolute -bottom-1 left-0 h-[2px] w-0 bg-gold-500 transition-all duration-300 hover:w-full" />
+                <span className="absolute -bottom-1 left-0 h-[2px] w-0 bg-gold-300 transition-all duration-300 hover:w-full" />
               </Link>
             ))}
           </div>
@@ -130,7 +130,7 @@ export default function Navbar() {
             {/* Search Icon */}
             <Link
               href="/shop"
-              className="rounded-full p-2 text-maroon-900/70 transition-colors hover:bg-gold-100 hover:text-maroon-900"
+              className="rounded-full p-2 text-white/70 transition-colors hover:bg-white/10 hover:text-white"
               aria-label="Search products"
             >
               <svg
@@ -153,7 +153,7 @@ export default function Navbar() {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                className="rounded-full p-2 text-maroon-900/70 transition-colors hover:bg-gold-100 hover:text-maroon-900"
+                className="rounded-full p-2 text-white/70 transition-colors hover:bg-white/10 hover:text-white"
                 aria-label="User menu"
               >
                 <svg
@@ -303,7 +303,7 @@ export default function Navbar() {
             {/* Cart Icon */}
             <Link
               href="/cart"
-              className="relative rounded-full p-2 text-maroon-900/70 transition-colors hover:bg-gold-100 hover:text-maroon-900"
+              className="relative rounded-full p-2 text-white/70 transition-colors hover:bg-white/10 hover:text-white"
               aria-label="Shopping cart"
             >
               <svg
@@ -321,7 +321,7 @@ export default function Navbar() {
                 />
               </svg>
               {itemCount > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-maroon-800 text-[10px] font-semibold text-white animate-scale-in">
+                <span className="absolute -right-0.5 -top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-gold-500 text-[10px] font-semibold text-maroon-900 animate-scale-in">
                   {itemCount > 99 ? '99+' : itemCount}
                 </span>
               )}
@@ -330,7 +330,7 @@ export default function Navbar() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="rounded-full p-2 text-maroon-900/70 transition-colors hover:bg-gold-100 hover:text-maroon-900 md:hidden"
+              className="rounded-full p-2 text-white/70 transition-colors hover:bg-white/10 hover:text-white md:hidden"
               aria-label="Toggle menu"
             >
               <svg
