@@ -87,9 +87,9 @@ export default function Navbar() {
       <nav
         className={`fixed top-0 left-0 right-0 z-50 h-[70px] transition-all duration-300 ${
           scrolled
-            ? 'bg-red-700/95 shadow-lg shadow-red-900/20'
-            : 'bg-red-700/90'
-        } backdrop-blur-md border-b border-red-800/50`}
+            ? 'bg-maroon-900/95 shadow-lg shadow-maroon-950/20'
+            : 'bg-maroon-900/90'
+        } backdrop-blur-md border-b border-maroon-800/50`}
       >
         <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           {/* Logo */}
