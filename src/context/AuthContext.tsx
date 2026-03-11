@@ -5,12 +5,14 @@ import {
   useContext,
   useState,
   useEffect,
-  useCallback,
   useRef,
   ReactNode,
 } from 'react';
 import { User } from '@/types';
 import { createClient } from '@/lib/supabase/client';
+
+// Single client instance at module scope — prevents phantom clients on every render
+const supabase = createClient();
 
 interface AuthContextType {
   user: User | null;
@@ -22,33 +24,15 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const supabaseRef = useRef(createClient());
-  const supabase = supabaseRef.current;
+async function fetchProfile(userId: string, fallbackEmail?: string, fallbackName?: string): Promise<User> {
+  try {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, name, email, role, created_at')
+      .eq('id', userId)
+      .single();
 
-  const fetchProfile = useCallback(async (userId: string, fallbackEmail?: string, fallbackName?: string): Promise<User | null> => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, name, email, role, created_at')
-        .eq('id', userId)
-        .single();
-
-      if (error || !data) {
-        // Fallback: return basic user from session data
-        return {
-          id: userId,
-          name: fallbackName || '',
-          email: fallbackEmail || '',
-          role: 'user',
-          created_at: new Date().toISOString(),
-        };
-      }
-
-      return data as User;
-    } catch {
+    if (error || !data) {
       return {
         id: userId,
         name: fallbackName || '',
@@ -57,10 +41,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         created_at: new Date().toISOString(),
       };
     }
-  }, [supabase]);
+
+    return data as User;
+  } catch {
+    return {
+      id: userId,
+      name: fallbackName || '',
+      email: fallbackEmail || '',
+      role: 'user',
+      created_at: new Date().toISOString(),
+    };
+  }
+}
+
+function withTimeout<T>(promise: Promise<T>, ms: number, message: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) => setTimeout(() => reject(new Error(message)), ms)),
+  ]);
+}
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  // Flag to skip onAuthStateChange when login/signup already handled user state
+  const handledByAction = useRef(false);
 
   useEffect(() => {
-    // Initial auth check
     const init = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
@@ -82,7 +89,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     init();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      async (event, session) => {
+        // Skip if login/signup already set the user directly
+        if (handledByAction.current) {
+          handledByAction.current = false;
+          return;
+        }
+
+        if (event === 'SIGNED_OUT') {
+          setUser(null);
+          setLoading(false);
+          return;
+        }
+
         if (session?.user) {
           const profile = await fetchProfile(
             session.user.id,
@@ -98,51 +117,59 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
 
     return () => subscription.unsubscribe();
-  }, [supabase, fetchProfile]);
+  }, []);
 
   const login = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const doLogin = async () => {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    if (error) {
-      throw new Error(error.message);
-    }
+      if (error) {
+        throw new Error(error.message);
+      }
 
-    // Immediately set user from session so we don't wait for onAuthStateChange
-    if (data.session?.user) {
-      const profile = await fetchProfile(
-        data.session.user.id,
-        data.session.user.email,
-        data.session.user.user_metadata?.name
-      );
-      setUser(profile);
-    }
+      if (data.session?.user) {
+        handledByAction.current = true;
+        const profile = await fetchProfile(
+          data.session.user.id,
+          data.session.user.email,
+          data.session.user.user_metadata?.name
+        );
+        setUser(profile);
+      }
+    };
+
+    await withTimeout(doLogin(), 15000, 'Sign-in timed out. Please check your connection and try again.');
   };
 
   const signup = async (name: string, email: string, password: string) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { name },
-      },
-    });
+    const doSignup = async () => {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { name },
+        },
+      });
 
-    if (error) {
-      throw new Error(error.message);
-    }
+      if (error) {
+        throw new Error(error.message);
+      }
 
-    // Immediately set user if auto-confirmed
-    if (data.session?.user) {
-      const profile = await fetchProfile(
-        data.session.user.id,
-        data.session.user.email,
-        name
-      );
-      setUser(profile);
-    }
+      if (data.session?.user) {
+        handledByAction.current = true;
+        const profile = await fetchProfile(
+          data.session.user.id,
+          data.session.user.email,
+          name
+        );
+        setUser(profile);
+      }
+    };
+
+    await withTimeout(doSignup(), 15000, 'Sign-up timed out. Please check your connection and try again.');
   };
 
   const logout = async () => {

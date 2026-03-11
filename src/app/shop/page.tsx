@@ -178,8 +178,8 @@ function ShopContent() {
         )}
 
         <div className="flex gap-8">
-          {/* Desktop Sidebar */}
-          <div className="hidden lg:block w-64 flex-shrink-0">
+          {/* Filter Sidebar (mobile overlay + desktop sidebar) */}
+          <div className="lg:w-64 lg:flex-shrink-0">
             <FilterSidebar
               categories={CATEGORIES}
               selectedCategory={selectedCategory}
@@ -190,25 +190,10 @@ function ShopContent() {
               onGenderChange={setSelectedGender}
               onPriceRangeChange={setPriceRange}
               onReset={handleReset}
-              isOpen={true}
-              onClose={() => {}}
+              isOpen={filterOpen}
+              onClose={() => setFilterOpen(false)}
             />
           </div>
-
-          {/* Mobile Sidebar Overlay */}
-          <FilterSidebar
-            categories={CATEGORIES}
-            selectedCategory={selectedCategory}
-            selectedGender={selectedGender}
-            priceRange={priceRange}
-            maxPrice={maxPrice}
-            onCategoryChange={setSelectedCategory}
-            onGenderChange={setSelectedGender}
-            onPriceRangeChange={setPriceRange}
-            onReset={handleReset}
-            isOpen={filterOpen}
-            onClose={() => setFilterOpen(false)}
-          />
 
           {/* Products Area */}
           <div className="flex-1">
