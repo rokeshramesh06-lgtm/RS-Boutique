@@ -6,16 +6,16 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-maroon-900 text-ivory-200">
+    <footer className="bg-maroon-50 text-gray-700">
       {/* Gold Ornament Divider */}
       <div className="flex items-center justify-center pt-8">
-        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gold-500/40 to-transparent" />
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-maroon-200 to-transparent" />
         <div className="mx-4 flex items-center gap-2">
-          <div className="h-1 w-1 rotate-45 bg-gold-500" />
-          <div className="h-2 w-2 rotate-45 bg-gold-500" />
-          <div className="h-1 w-1 rotate-45 bg-gold-500" />
+          <div className="h-1 w-1 rotate-45 bg-maroon-400" />
+          <div className="h-2 w-2 rotate-45 bg-maroon-400" />
+          <div className="h-1 w-1 rotate-45 bg-maroon-400" />
         </div>
-        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gold-500/40 to-transparent" />
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-maroon-200 to-transparent" />
       </div>
 
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -23,14 +23,14 @@ export default function Footer() {
           {/* About Column */}
           <div className="sm:col-span-2 lg:col-span-1">
             <Link href="/" className="group inline-flex items-baseline gap-1">
-              <span className="font-display text-3xl font-bold tracking-wide text-ivory-100 transition-colors group-hover:text-gold-400">
+              <span className="font-display text-3xl font-bold tracking-wide text-maroon-900 transition-colors group-hover:text-maroon-700">
                 RS
               </span>
               <span className="font-display text-sm font-medium tracking-[0.2em] text-gold-500 uppercase">
                 Boutique
               </span>
             </Link>
-            <p className="mt-4 max-w-xs font-body text-sm leading-relaxed text-ivory-200/70">
+            <p className="mt-4 max-w-xs font-body text-sm leading-relaxed text-gray-500">
               Celebrating the artistry of Indian fashion since 2020. We bring
               you handcrafted garments that blend timeless tradition with
               contemporary elegance, using the finest fabrics and meticulous
@@ -40,7 +40,7 @@ export default function Footer() {
             <div className="mt-6 flex items-center gap-3">
               <a
                 href="#"
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-gold-500/30 text-gold-400 transition-all hover:border-gold-500 hover:bg-gold-500/10 hover:text-gold-300"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-maroon-300 text-maroon-500 transition-all hover:border-maroon-500 hover:bg-maroon-100 hover:text-maroon-700"
                 aria-label="Instagram"
               >
                 <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
@@ -49,7 +49,7 @@ export default function Footer() {
               </a>
               <a
                 href="#"
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-gold-500/30 text-gold-400 transition-all hover:border-gold-500 hover:bg-gold-500/10 hover:text-gold-300"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-maroon-300 text-maroon-500 transition-all hover:border-maroon-500 hover:bg-maroon-100 hover:text-maroon-700"
                 aria-label="Facebook"
               >
                 <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
@@ -58,7 +58,7 @@ export default function Footer() {
               </a>
               <a
                 href="#"
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-gold-500/30 text-gold-400 transition-all hover:border-gold-500 hover:bg-gold-500/10 hover:text-gold-300"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-maroon-300 text-maroon-500 transition-all hover:border-maroon-500 hover:bg-maroon-100 hover:text-maroon-700"
                 aria-label="Twitter"
               >
                 <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
@@ -70,10 +70,10 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="font-display text-lg font-semibold tracking-wide text-gold-400">
+            <h3 className="font-display text-lg font-semibold tracking-wide text-maroon-800">
               Quick Links
             </h3>
-            <div className="mt-1 mb-4 h-px w-12 bg-gold-500/40" />
+            <div className="mt-1 mb-4 h-px w-12 bg-maroon-300" />
             <ul className="space-y-2.5">
               {[
                 { label: 'Home', href: '/' },
@@ -85,7 +85,7 @@ export default function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="font-body text-sm text-ivory-200/70 transition-colors hover:text-gold-400"
+                    className="font-body text-sm text-gray-500 transition-colors hover:text-maroon-900"
                   >
                     {link.label}
                   </Link>
@@ -96,10 +96,10 @@ export default function Footer() {
 
           {/* Categories */}
           <div>
-            <h3 className="font-display text-lg font-semibold tracking-wide text-gold-400">
+            <h3 className="font-display text-lg font-semibold tracking-wide text-maroon-800">
               Categories
             </h3>
-            <div className="mt-1 mb-4 h-px w-12 bg-gold-500/40" />
+            <div className="mt-1 mb-4 h-px w-12 bg-maroon-300" />
             <ul className="space-y-2.5">
               {[
                 { label: 'Sarees', href: '/shop?category=Sarees' },
@@ -109,7 +109,7 @@ export default function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="font-body text-sm text-ivory-200/70 transition-colors hover:text-gold-400"
+                    className="font-body text-sm text-gray-500 transition-colors hover:text-maroon-900"
                   >
                     {link.label}
                   </Link>
@@ -120,11 +120,11 @@ export default function Footer() {
 
           {/* Contact & Newsletter */}
           <div>
-            <h3 className="font-display text-lg font-semibold tracking-wide text-gold-400">
+            <h3 className="font-display text-lg font-semibold tracking-wide text-maroon-800">
               Stay Connected
             </h3>
-            <div className="mt-1 mb-4 h-px w-12 bg-gold-500/40" />
-            <ul className="space-y-2.5 text-sm text-ivory-200/70">
+            <div className="mt-1 mb-4 h-px w-12 bg-maroon-300" />
+            <ul className="space-y-2.5 text-sm text-gray-500">
               <li className="flex items-start gap-2">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -132,7 +132,7 @@ export default function Footer() {
                   viewBox="0 0 24 24"
                   strokeWidth={1.5}
                   stroke="currentColor"
-                  className="mt-0.5 h-4 w-4 flex-shrink-0 text-gold-500"
+                  className="mt-0.5 h-4 w-4 flex-shrink-0 text-maroon-500"
                 >
                   <path
                     strokeLinecap="round"
@@ -154,7 +154,7 @@ export default function Footer() {
                   viewBox="0 0 24 24"
                   strokeWidth={1.5}
                   stroke="currentColor"
-                  className="h-4 w-4 flex-shrink-0 text-gold-500"
+                  className="h-4 w-4 flex-shrink-0 text-maroon-500"
                 >
                   <path
                     strokeLinecap="round"
@@ -171,7 +171,7 @@ export default function Footer() {
                   viewBox="0 0 24 24"
                   strokeWidth={1.5}
                   stroke="currentColor"
-                  className="h-4 w-4 flex-shrink-0 text-gold-500"
+                  className="h-4 w-4 flex-shrink-0 text-maroon-500"
                 >
                   <path
                     strokeLinecap="round"
@@ -185,7 +185,7 @@ export default function Footer() {
 
             {/* Newsletter */}
             <div className="mt-6">
-              <p className="mb-3 text-sm text-ivory-200/70">
+              <p className="mb-3 text-sm text-gray-500">
                 Get exclusive offers and style updates
               </p>
               <form
@@ -195,11 +195,11 @@ export default function Footer() {
                 <input
                   type="email"
                   placeholder="Your email"
-                  className="w-full rounded-l-lg border border-gold-500/30 bg-maroon-950/50 px-3 py-2.5 font-body text-sm text-ivory-200 placeholder-ivory-300/40 outline-none transition-colors focus:border-gold-500"
+                  className="w-full rounded-l-lg border border-maroon-200 bg-white px-3 py-2.5 font-body text-sm text-gray-700 placeholder-gray-400 outline-none transition-colors focus:border-maroon-500"
                 />
                 <button
                   type="submit"
-                  className="flex-shrink-0 rounded-r-lg bg-gold-500 px-4 py-2.5 font-body text-sm font-medium text-maroon-900 transition-colors hover:bg-gold-400"
+                  className="flex-shrink-0 rounded-r-lg bg-maroon-900 px-4 py-2.5 font-body text-sm font-medium text-white transition-colors hover:bg-maroon-800"
                 >
                   Join
                 </button>
@@ -210,12 +210,12 @@ export default function Footer() {
       </div>
 
       {/* Copyright Bar */}
-      <div className="border-t border-ivory-200/10">
+      <div className="border-t border-maroon-100">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 py-5 sm:flex-row sm:px-6 lg:px-8">
-          <p className="font-body text-xs text-ivory-200/50">
+          <p className="font-body text-xs text-gray-400">
             &copy; {currentYear} RS Boutique. All rights reserved.
           </p>
-          <p className="font-body text-xs text-ivory-200/40">
+          <p className="font-body text-xs text-gray-400">
             Crafted with love in India
           </p>
         </div>

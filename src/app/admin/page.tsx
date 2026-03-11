@@ -258,8 +258,8 @@ export default function AdminPage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-ivory-100 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-maroon-900" />
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-maroon-600" />
       </div>
     );
   }
@@ -290,17 +290,17 @@ export default function AdminPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-ivory-100">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <div className="bg-gradient-to-r from-maroon-900 via-maroon-800 to-maroon-900 py-8 px-4">
+      <div className="bg-gradient-to-br from-maroon-50 via-white to-rose-50 border-b border-maroon-100 py-8 px-4">
         <div className="max-w-7xl mx-auto">
-          <h1 className="font-display text-3xl md:text-4xl font-bold text-white">Admin Panel</h1>
-          <p className="font-body text-ivory-200/60 text-sm mt-1">Manage your store</p>
+          <h1 className="font-display text-3xl md:text-4xl font-bold text-maroon-900">Admin Panel</h1>
+          <p className="font-body text-gray-500 text-sm mt-1">Manage your store</p>
         </div>
       </div>
 
       {/* Tab Navigation */}
-      <div className="bg-white border-b border-ivory-300 sticky top-[70px] z-30">
+      <div className="bg-white border-b border-gray-100 sticky top-[70px] z-30">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex gap-1 overflow-x-auto scrollbar-hide">
             {TABS.map((tab) => (
@@ -324,7 +324,7 @@ export default function AdminPage() {
       <div className="max-w-7xl mx-auto px-4 py-8">
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-maroon-900" />
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-maroon-600" />
           </div>
         ) : (
           <>
@@ -438,7 +438,7 @@ export default function AdminPage() {
                       setShowProductForm(true);
                       setProductError('');
                     }}
-                    className="px-5 py-2.5 bg-maroon-900 text-white font-body text-sm font-semibold rounded-lg hover:bg-maroon-800 transition-colors flex items-center gap-2"
+                    className="px-5 py-2.5 bg-maroon-700 text-white font-body text-sm font-semibold rounded-lg hover:bg-maroon-600 transition-colors flex items-center gap-2"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -449,7 +449,7 @@ export default function AdminPage() {
 
                 {/* Product Form Modal */}
                 {showProductForm && (
-                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 p-4">
                     <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-8">
                       <div className="flex items-center justify-between mb-6">
                         <h3 className="font-display text-2xl font-bold text-maroon-900">
@@ -476,7 +476,7 @@ export default function AdminPage() {
                             value={productForm.name}
                             onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
                             required
-                            className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-gold-500 transition-all"
+                            className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-maroon-500 transition-all"
                           />
                         </div>
 
@@ -487,7 +487,7 @@ export default function AdminPage() {
                             onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
                             required
                             rows={3}
-                            className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-gold-500 transition-all resize-none"
+                            className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-maroon-500 transition-all resize-none"
                           />
                         </div>
 
@@ -499,7 +499,7 @@ export default function AdminPage() {
                               value={productForm.price}
                               onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
                               required
-                              className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-gold-500 transition-all"
+                              className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-maroon-500 transition-all"
                             />
                           </div>
                           <div>
@@ -509,7 +509,7 @@ export default function AdminPage() {
                               value={productForm.original_price}
                               onChange={(e) => setProductForm({ ...productForm, original_price: e.target.value })}
                               required
-                              className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-gold-500 transition-all"
+                              className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-maroon-500 transition-all"
                             />
                           </div>
                         </div>
@@ -520,7 +520,7 @@ export default function AdminPage() {
                             <select
                               value={productForm.category}
                               onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
-                              className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-gold-500 transition-all"
+                              className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-maroon-500 transition-all"
                             >
                               {CATEGORIES.map((cat) => <option key={cat} value={cat}>{cat}</option>)}
                             </select>
@@ -530,7 +530,7 @@ export default function AdminPage() {
                             <select
                               value={productForm.gender}
                               onChange={(e) => setProductForm({ ...productForm, gender: e.target.value })}
-                              className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-gold-500 transition-all"
+                              className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-maroon-500 transition-all"
                             >
                               {GENDERS.map((g) => <option key={g} value={g}>{g}</option>)}
                             </select>
@@ -555,7 +555,7 @@ export default function AdminPage() {
                                 className={`px-3 py-1.5 rounded-lg font-body text-xs transition-all ${
                                   productForm.sizes.includes(size)
                                     ? 'bg-maroon-900 text-white'
-                                    : 'bg-ivory-200 text-gray-600 hover:bg-ivory-300'
+                                    : 'bg-ivory-200 text-gray-600 hover:bg-gray-100'
                                 }`}
                               >
                                 {size}
@@ -571,7 +571,7 @@ export default function AdminPage() {
                             value={productForm.colors}
                             onChange={(e) => setProductForm({ ...productForm, colors: e.target.value })}
                             placeholder="Red, Gold, Maroon"
-                            className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-gold-500 transition-all"
+                            className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-maroon-500 transition-all"
                           />
                         </div>
 
@@ -582,7 +582,7 @@ export default function AdminPage() {
                             value={productForm.image_url}
                             onChange={(e) => setProductForm({ ...productForm, image_url: e.target.value })}
                             placeholder="https://images.unsplash.com/photo-..."
-                            className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-gold-500 transition-all"
+                            className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-maroon-500 transition-all"
                           />
                           {productForm.image_url && (
                             <img
@@ -600,7 +600,7 @@ export default function AdminPage() {
                             value={productForm.image_gradient}
                             onChange={(e) => setProductForm({ ...productForm, image_gradient: e.target.value })}
                             placeholder="#8B1A1A to #C9A84C"
-                            className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-gold-500 transition-all"
+                            className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-maroon-500 transition-all"
                           />
                           {productForm.image_gradient && (
                             <div
@@ -635,7 +635,7 @@ export default function AdminPage() {
                           <button
                             type="submit"
                             disabled={productSaving}
-                            className="flex-1 py-3 bg-maroon-900 text-white font-body font-semibold text-sm rounded-lg hover:bg-maroon-800 transition-colors disabled:opacity-50"
+                            className="flex-1 py-3 bg-maroon-700 text-white font-body font-semibold text-sm rounded-lg hover:bg-maroon-600 transition-colors disabled:opacity-50"
                           >
                             {productSaving ? 'Saving...' : editingProduct ? 'Update Product' : 'Create Product'}
                           </button>
@@ -755,7 +755,7 @@ export default function AdminPage() {
                       setShowCouponForm(true);
                       setCouponError('');
                     }}
-                    className="px-5 py-2.5 bg-maroon-900 text-white font-body text-sm font-semibold rounded-lg hover:bg-maroon-800 transition-colors flex items-center gap-2"
+                    className="px-5 py-2.5 bg-maroon-700 text-white font-body text-sm font-semibold rounded-lg hover:bg-maroon-600 transition-colors flex items-center gap-2"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -766,7 +766,7 @@ export default function AdminPage() {
 
                 {/* Coupon Form Modal */}
                 {showCouponForm && (
-                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 p-4">
                     <div className="bg-white rounded-2xl max-w-lg w-full p-6 md:p-8">
                       <div className="flex items-center justify-between mb-6">
                         <h3 className="font-display text-2xl font-bold text-maroon-900">Add New Coupon</h3>
@@ -792,7 +792,7 @@ export default function AdminPage() {
                             onChange={(e) => setCouponForm({ ...couponForm, code: e.target.value.toUpperCase() })}
                             required
                             placeholder="e.g. SAVE20"
-                            className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-gold-500 transition-all uppercase"
+                            className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-maroon-500 transition-all uppercase"
                           />
                         </div>
 
@@ -804,7 +804,7 @@ export default function AdminPage() {
                               value={couponForm.discount_percent}
                               onChange={(e) => setCouponForm({ ...couponForm, discount_percent: e.target.value })}
                               placeholder="0"
-                              className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-gold-500 transition-all"
+                              className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-maroon-500 transition-all"
                             />
                           </div>
                           <div>
@@ -814,7 +814,7 @@ export default function AdminPage() {
                               value={couponForm.discount_amount}
                               onChange={(e) => setCouponForm({ ...couponForm, discount_amount: e.target.value })}
                               placeholder="0"
-                              className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-gold-500 transition-all"
+                              className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-maroon-500 transition-all"
                             />
                           </div>
                         </div>
@@ -827,7 +827,7 @@ export default function AdminPage() {
                               value={couponForm.min_order}
                               onChange={(e) => setCouponForm({ ...couponForm, min_order: e.target.value })}
                               placeholder="0"
-                              className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-gold-500 transition-all"
+                              className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-maroon-500 transition-all"
                             />
                           </div>
                           <div>
@@ -837,7 +837,7 @@ export default function AdminPage() {
                               value={couponForm.max_uses}
                               onChange={(e) => setCouponForm({ ...couponForm, max_uses: e.target.value })}
                               placeholder="100"
-                              className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-gold-500 transition-all"
+                              className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-maroon-500 transition-all"
                             />
                           </div>
                         </div>
@@ -848,7 +848,7 @@ export default function AdminPage() {
                             type="date"
                             value={couponForm.expires_at}
                             onChange={(e) => setCouponForm({ ...couponForm, expires_at: e.target.value })}
-                            className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-gold-500 transition-all"
+                            className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-maroon-500 transition-all"
                           />
                         </div>
 
@@ -866,7 +866,7 @@ export default function AdminPage() {
                           <button
                             type="submit"
                             disabled={couponSaving}
-                            className="flex-1 py-3 bg-maroon-900 text-white font-body font-semibold text-sm rounded-lg hover:bg-maroon-800 transition-colors disabled:opacity-50"
+                            className="flex-1 py-3 bg-maroon-700 text-white font-body font-semibold text-sm rounded-lg hover:bg-maroon-600 transition-colors disabled:opacity-50"
                           >
                             {couponSaving ? 'Creating...' : 'Create Coupon'}
                           </button>
@@ -971,7 +971,7 @@ export default function AdminPage() {
                               <select
                                 value={order.status}
                                 onChange={(e) => handleStatusUpdate(order.id, e.target.value)}
-                                className="px-3 py-1.5 border border-ivory-300 rounded-lg font-body text-xs focus:outline-none focus:border-gold-500 transition-all cursor-pointer"
+                                className="px-3 py-1.5 border border-ivory-300 rounded-lg font-body text-xs focus:outline-none focus:border-maroon-500 transition-all cursor-pointer"
                               >
                                 {ORDER_STATUSES.map((s) => (
                                   <option key={s} value={s} className="capitalize">{s.charAt(0).toUpperCase() + s.slice(1)}</option>

@@ -171,8 +171,8 @@ export default function CheckoutPage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-ivory-100 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-maroon-900" />
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-maroon-600" />
       </div>
     );
   }
@@ -182,7 +182,7 @@ export default function CheckoutPage() {
   // Order Confirmation
   if (orderPlaced) {
     return (
-      <div className="min-h-screen bg-ivory-100 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-white flex items-center justify-center px-4">
         <div className="max-w-lg w-full text-center bg-white rounded-2xl p-8 md:p-12 shadow-sm">
           <div className="w-20 h-20 mx-auto mb-6 bg-green-100 rounded-full flex items-center justify-center">
             <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -209,7 +209,7 @@ export default function CheckoutPage() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               href="/orders"
-              className="px-6 py-3 bg-maroon-900 text-white font-body font-semibold text-sm rounded-lg hover:bg-maroon-800 transition-colors"
+              className="px-6 py-3 bg-maroon-700 text-white font-body font-semibold text-sm rounded-lg hover:bg-maroon-600 transition-colors"
             >
               View My Orders
             </Link>
@@ -226,22 +226,22 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-ivory-100">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <div className="bg-gradient-to-r from-maroon-900 via-maroon-800 to-maroon-900 py-10 px-4">
+      <div className="bg-gradient-to-br from-maroon-50 via-white to-rose-50 border-b border-maroon-100 py-10 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center gap-2 text-ivory-200/60 font-body text-sm mb-3">
-            <Link href="/" className="hover:text-gold-400 transition-colors">Home</Link>
+          <div className="flex items-center gap-2 text-gray-400 font-body text-sm mb-3">
+            <Link href="/" className="hover:text-maroon-700 transition-colors">Home</Link>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-            <Link href="/cart" className="hover:text-gold-400 transition-colors">Cart</Link>
+            <Link href="/cart" className="hover:text-maroon-700 transition-colors">Cart</Link>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-            <span className="text-gold-400">Checkout</span>
+            <span className="text-maroon-700">Checkout</span>
           </div>
-          <h1 className="font-display text-4xl md:text-5xl font-bold text-white">Checkout</h1>
+          <h1 className="font-display text-4xl md:text-5xl font-bold text-maroon-900">Checkout</h1>
         </div>
       </div>
 
@@ -253,7 +253,7 @@ export default function CheckoutPage() {
               {/* Shipping Address */}
               <div className="bg-white rounded-xl p-6 shadow-sm">
                 <h2 className="font-display text-2xl font-bold text-maroon-900 mb-6 flex items-center gap-3">
-                  <span className="w-8 h-8 bg-maroon-900 text-white rounded-full flex items-center justify-center font-body text-sm font-semibold">1</span>
+                  <span className="w-8 h-8 bg-maroon-700 text-white rounded-full flex items-center justify-center font-body text-sm font-semibold">1</span>
                   Shipping Address
                 </h2>
 
@@ -265,7 +265,7 @@ export default function CheckoutPage() {
                       value={shipping.fullName}
                       onChange={(e) => handleShippingChange('fullName', e.target.value)}
                       placeholder="Enter your full name"
-                      className="w-full px-4 py-3 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500/30 transition-all"
+                      className="w-full px-4 py-3 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-maroon-500 focus:ring-1 focus:ring-maroon-500/20 transition-all"
                       required
                     />
                   </div>
@@ -276,7 +276,7 @@ export default function CheckoutPage() {
                       value={shipping.phone}
                       onChange={(e) => handleShippingChange('phone', e.target.value)}
                       placeholder="+91 XXXXX XXXXX"
-                      className="w-full px-4 py-3 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500/30 transition-all"
+                      className="w-full px-4 py-3 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-maroon-500 focus:ring-1 focus:ring-maroon-500/20 transition-all"
                       required
                     />
                   </div>
@@ -287,7 +287,7 @@ export default function CheckoutPage() {
                       value={shipping.address1}
                       onChange={(e) => handleShippingChange('address1', e.target.value)}
                       placeholder="House no., Street, Area"
-                      className="w-full px-4 py-3 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500/30 transition-all"
+                      className="w-full px-4 py-3 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-maroon-500 focus:ring-1 focus:ring-maroon-500/20 transition-all"
                       required
                     />
                   </div>
@@ -298,7 +298,7 @@ export default function CheckoutPage() {
                       value={shipping.address2}
                       onChange={(e) => handleShippingChange('address2', e.target.value)}
                       placeholder="Landmark, Colony (optional)"
-                      className="w-full px-4 py-3 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500/30 transition-all"
+                      className="w-full px-4 py-3 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-maroon-500 focus:ring-1 focus:ring-maroon-500/20 transition-all"
                     />
                   </div>
                   <div>
@@ -308,7 +308,7 @@ export default function CheckoutPage() {
                       value={shipping.city}
                       onChange={(e) => handleShippingChange('city', e.target.value)}
                       placeholder="City"
-                      className="w-full px-4 py-3 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500/30 transition-all"
+                      className="w-full px-4 py-3 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-maroon-500 focus:ring-1 focus:ring-maroon-500/20 transition-all"
                       required
                     />
                   </div>
@@ -320,7 +320,7 @@ export default function CheckoutPage() {
                         value={shipping.state}
                         onChange={(e) => handleShippingChange('state', e.target.value)}
                         placeholder="State"
-                        className="w-full px-4 py-3 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500/30 transition-all"
+                        className="w-full px-4 py-3 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-maroon-500 focus:ring-1 focus:ring-maroon-500/20 transition-all"
                         required
                       />
                     </div>
@@ -332,7 +332,7 @@ export default function CheckoutPage() {
                         onChange={(e) => handleShippingChange('pinCode', e.target.value)}
                         placeholder="6-digit PIN"
                         maxLength={6}
-                        className="w-full px-4 py-3 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500/30 transition-all"
+                        className="w-full px-4 py-3 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-maroon-500 focus:ring-1 focus:ring-maroon-500/20 transition-all"
                         required
                       />
                     </div>
@@ -343,13 +343,13 @@ export default function CheckoutPage() {
               {/* Payment Method */}
               <div className="bg-white rounded-xl p-6 shadow-sm">
                 <h2 className="font-display text-2xl font-bold text-maroon-900 mb-6 flex items-center gap-3">
-                  <span className="w-8 h-8 bg-maroon-900 text-white rounded-full flex items-center justify-center font-body text-sm font-semibold">2</span>
+                  <span className="w-8 h-8 bg-maroon-700 text-white rounded-full flex items-center justify-center font-body text-sm font-semibold">2</span>
                   Payment Method
                 </h2>
 
                 <div className="space-y-3">
                   {/* COD */}
-                  <label className={`flex items-center gap-4 p-4 rounded-lg border-2 cursor-pointer transition-all ${paymentMethod === 'cod' ? 'border-gold-500 bg-gold-50' : 'border-ivory-300 hover:border-gold-500/50'}`}>
+                  <label className={`flex items-center gap-4 p-4 rounded-lg border-2 cursor-pointer transition-all ${paymentMethod === 'cod' ? 'border-maroon-500 bg-maroon-50' : 'border-ivory-300 hover:border-maroon-300'}`}>
                     <input
                       type="radio"
                       name="payment"
@@ -368,7 +368,7 @@ export default function CheckoutPage() {
                   </label>
 
                   {/* UPI */}
-                  <label className={`flex items-center gap-4 p-4 rounded-lg border-2 cursor-pointer transition-all ${paymentMethod === 'upi' ? 'border-gold-500 bg-gold-50' : 'border-ivory-300 hover:border-gold-500/50'}`}>
+                  <label className={`flex items-center gap-4 p-4 rounded-lg border-2 cursor-pointer transition-all ${paymentMethod === 'upi' ? 'border-maroon-500 bg-maroon-50' : 'border-ivory-300 hover:border-maroon-300'}`}>
                     <input
                       type="radio"
                       name="payment"
@@ -387,20 +387,20 @@ export default function CheckoutPage() {
                   </label>
 
                   {paymentMethod === 'upi' && (
-                    <div className="ml-9 mt-2 p-4 bg-ivory-100 rounded-lg">
+                    <div className="ml-9 mt-2 p-4 bg-gray-50 rounded-lg">
                       <label className="font-body text-sm font-medium text-gray-700 mb-1.5 block">UPI ID *</label>
                       <input
                         type="text"
                         value={upiId}
                         onChange={(e) => setUpiId(e.target.value)}
                         placeholder="yourname@upi"
-                        className="w-full px-4 py-3 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-gold-500 transition-all bg-white"
+                        className="w-full px-4 py-3 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-maroon-500 transition-all bg-white"
                       />
                     </div>
                   )}
 
                   {/* Card */}
-                  <label className={`flex items-center gap-4 p-4 rounded-lg border-2 cursor-pointer transition-all ${paymentMethod === 'card' ? 'border-gold-500 bg-gold-50' : 'border-ivory-300 hover:border-gold-500/50'}`}>
+                  <label className={`flex items-center gap-4 p-4 rounded-lg border-2 cursor-pointer transition-all ${paymentMethod === 'card' ? 'border-maroon-500 bg-maroon-50' : 'border-ivory-300 hover:border-maroon-300'}`}>
                     <input
                       type="radio"
                       name="payment"
@@ -419,7 +419,7 @@ export default function CheckoutPage() {
                   </label>
 
                   {paymentMethod === 'card' && (
-                    <div className="ml-9 mt-2 p-4 bg-ivory-100 rounded-lg space-y-3">
+                    <div className="ml-9 mt-2 p-4 bg-gray-50 rounded-lg space-y-3">
                       <div>
                         <label className="font-body text-sm font-medium text-gray-700 mb-1.5 block">Card Number *</label>
                         <input
@@ -428,7 +428,7 @@ export default function CheckoutPage() {
                           onChange={(e) => setCardNumber(e.target.value)}
                           placeholder="XXXX XXXX XXXX XXXX"
                           maxLength={19}
-                          className="w-full px-4 py-3 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-gold-500 transition-all bg-white"
+                          className="w-full px-4 py-3 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-maroon-500 transition-all bg-white"
                         />
                       </div>
                       <div className="grid grid-cols-2 gap-3">
@@ -440,7 +440,7 @@ export default function CheckoutPage() {
                             onChange={(e) => setCardExpiry(e.target.value)}
                             placeholder="MM/YY"
                             maxLength={5}
-                            className="w-full px-4 py-3 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-gold-500 transition-all bg-white"
+                            className="w-full px-4 py-3 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-maroon-500 transition-all bg-white"
                           />
                         </div>
                         <div>
@@ -451,7 +451,7 @@ export default function CheckoutPage() {
                             onChange={(e) => setCardCVV(e.target.value)}
                             placeholder="XXX"
                             maxLength={4}
-                            className="w-full px-4 py-3 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-gold-500 transition-all bg-white"
+                            className="w-full px-4 py-3 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-maroon-500 transition-all bg-white"
                           />
                         </div>
                       </div>
@@ -514,13 +514,13 @@ export default function CheckoutPage() {
                           placeholder="Coupon code"
                           value={couponCode}
                           onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                          className="flex-1 px-3 py-2 border border-ivory-300 rounded-lg font-body text-xs focus:outline-none focus:border-gold-500 transition-all"
+                          className="flex-1 px-3 py-2 border border-ivory-300 rounded-lg font-body text-xs focus:outline-none focus:border-maroon-500 transition-all"
                         />
                         <button
                           type="button"
                           onClick={handleApplyCoupon}
                           disabled={couponLoading}
-                          className="px-3 py-2 bg-maroon-900 text-white font-body text-xs rounded-lg hover:bg-maroon-800 transition-colors disabled:opacity-50"
+                          className="px-3 py-2 bg-maroon-700 text-white font-body text-xs rounded-lg hover:bg-maroon-600 transition-colors disabled:opacity-50"
                         >
                           {couponLoading ? '...' : 'Apply'}
                         </button>
@@ -556,11 +556,11 @@ export default function CheckoutPage() {
                 <button
                   type="submit"
                   disabled={placing}
-                  className="w-full mt-6 py-4 bg-gold-500 text-maroon-900 font-body font-semibold text-sm tracking-wide uppercase rounded-lg hover:bg-gold-400 hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full mt-6 py-4 bg-maroon-900 text-white font-body font-semibold text-sm tracking-wide uppercase rounded-lg hover:bg-maroon-800 hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {placing ? (
                     <>
-                      <div className="w-5 h-5 border-2 border-maroon-900/30 border-t-maroon-900 rounded-full animate-spin" />
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                       Placing Order...
                     </>
                   ) : (

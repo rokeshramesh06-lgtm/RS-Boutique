@@ -91,7 +91,7 @@ export default function FilterSidebar({
         <h2 className="font-display text-xl font-semibold text-maroon-900">
           Refine Selection
         </h2>
-        <div className="mt-1 h-px w-16 bg-gold-500/60" />
+        <div className="mt-1 h-px w-16 bg-maroon-300" />
       </div>
 
       {/* Categories Filter */}
@@ -104,7 +104,7 @@ export default function FilterSidebar({
             onClick={() => onCategoryChange('')}
             className={`rounded-lg px-4 py-2.5 text-left font-body text-sm transition-all duration-200 ${
               selectedCategory === ''
-                ? 'bg-gold-500/15 font-medium text-maroon-900 border-l-2 border-gold-500'
+                ? 'bg-maroon-100 font-medium text-maroon-900 border-l-2 border-maroon-500'
                 : 'text-[#6B6B6B] hover:bg-ivory-200 hover:text-maroon-800'
             }`}
           >
@@ -116,7 +116,7 @@ export default function FilterSidebar({
               onClick={() => onCategoryChange(category)}
               className={`rounded-lg px-4 py-2.5 text-left font-body text-sm transition-all duration-200 ${
                 selectedCategory === category
-                  ? 'bg-gold-500/15 font-medium text-maroon-900 border-l-2 border-gold-500'
+                  ? 'bg-maroon-100 font-medium text-maroon-900 border-l-2 border-maroon-500'
                   : 'text-[#6B6B6B] hover:bg-ivory-200 hover:text-maroon-800'
               }`}
             >
@@ -199,8 +199,8 @@ export default function FilterSidebar({
                 className={`rounded-full border px-3 py-1.5 font-body text-xs transition-all ${
                   priceRange[0] === preset.range[0] &&
                   priceRange[1] === preset.range[1]
-                    ? 'border-gold-500 bg-gold-500/10 text-maroon-900'
-                    : 'border-ivory-300 text-[#6B6B6B] hover:border-gold-400 hover:text-maroon-800'
+                    ? 'border-maroon-500 bg-maroon-50 text-maroon-900'
+                    : 'border-ivory-300 text-[#6B6B6B] hover:border-maroon-400 hover:text-maroon-800'
                 }`}
               >
                 {preset.label}
@@ -248,7 +248,7 @@ export default function FilterSidebar({
       >
         {/* Backdrop */}
         <div
-          className="absolute inset-0 bg-maroon-900/40 backdrop-blur-sm"
+          className="absolute inset-0 bg-black/20 backdrop-blur-sm"
           onClick={onClose}
         />
 

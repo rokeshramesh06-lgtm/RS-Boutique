@@ -46,7 +46,7 @@ export default function RootLayout({
       lang="en"
       className={`${cormorantGaramond.variable} ${jost.variable}`}
     >
-      <body className="font-body bg-ivory-100 text-[#1A1A1A] antialiased">
+      <body className="font-body bg-white text-[#1A1A1A] antialiased">
         <AuthProvider>
           <CartProvider>
             <div className="flex min-h-screen flex-col">

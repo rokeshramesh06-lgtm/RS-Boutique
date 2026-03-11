@@ -44,8 +44,8 @@ export default function OrdersPage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-ivory-100 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-maroon-900" />
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-maroon-600" />
       </div>
     );
   }
@@ -53,19 +53,19 @@ export default function OrdersPage() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-ivory-100">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <div className="bg-gradient-to-r from-maroon-900 via-maroon-800 to-maroon-900 py-10 px-4">
+      <div className="bg-gradient-to-br from-maroon-50 via-white to-rose-50 border-b border-maroon-100 py-10 px-4">
         <div className="max-w-5xl mx-auto">
-          <div className="flex items-center gap-2 text-ivory-200/60 font-body text-sm mb-3">
-            <Link href="/" className="hover:text-gold-400 transition-colors">Home</Link>
+          <div className="flex items-center gap-2 text-gray-400 font-body text-sm mb-3">
+            <Link href="/" className="hover:text-maroon-700 transition-colors">Home</Link>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-            <span className="text-gold-400">My Orders</span>
+            <span className="text-maroon-700">My Orders</span>
           </div>
-          <h1 className="font-display text-4xl md:text-5xl font-bold text-white">My Orders</h1>
-          <p className="font-body text-ivory-200/60 text-sm mt-1">Track and manage your orders</p>
+          <h1 className="font-display text-4xl md:text-5xl font-bold text-maroon-900">My Orders</h1>
+          <p className="font-body text-gray-500 text-sm mt-1">Track and manage your orders</p>
         </div>
       </div>
 
@@ -75,17 +75,17 @@ export default function OrdersPage() {
             {[...Array(3)].map((_, i) => (
               <div key={i} className="bg-white rounded-xl p-6 animate-pulse">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="h-5 bg-ivory-300 rounded w-1/4" />
-                  <div className="h-5 bg-ivory-300 rounded w-20" />
+                  <div className="h-5 bg-gray-100 rounded w-1/4" />
+                  <div className="h-5 bg-gray-100 rounded w-20" />
                 </div>
-                <div className="h-4 bg-ivory-300 rounded w-1/3 mb-2" />
-                <div className="h-4 bg-ivory-300 rounded w-1/2" />
+                <div className="h-4 bg-gray-100 rounded w-1/3 mb-2" />
+                <div className="h-4 bg-gray-100 rounded w-1/2" />
               </div>
             ))}
           </div>
         ) : orders.length === 0 ? (
           <div className="text-center py-20">
-            <div className="w-24 h-24 mx-auto mb-6 bg-ivory-200 rounded-full flex items-center justify-center">
+            <div className="w-24 h-24 mx-auto mb-6 bg-maroon-50 rounded-full flex items-center justify-center">
               <svg className="w-12 h-12 text-maroon-900/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
               </svg>
@@ -94,7 +94,7 @@ export default function OrdersPage() {
             <p className="font-body text-gray-500 mb-8">You have not placed any orders yet. Start exploring our collection!</p>
             <Link
               href="/shop"
-              className="inline-flex items-center gap-2 px-8 py-3.5 bg-maroon-900 text-white font-body font-semibold text-sm tracking-wide uppercase rounded-lg hover:bg-maroon-800 transition-colors"
+              className="inline-flex items-center gap-2 px-8 py-3.5 bg-maroon-700 text-white font-body font-semibold text-sm tracking-wide uppercase rounded-lg hover:bg-maroon-600 transition-colors"
             >
               Start Shopping
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -119,7 +119,7 @@ export default function OrdersPage() {
                     </div>
 
                     {/* Date */}
-                    <div className="hidden md:block w-[1px] h-8 bg-ivory-300" />
+                    <div className="hidden md:block w-[1px] h-8 bg-gray-100" />
                     <div>
                       <p className="font-body text-xs text-gray-500 uppercase tracking-wider">Date</p>
                       <p className="font-body text-sm text-gray-700">
@@ -186,7 +186,7 @@ export default function OrdersPage() {
                     <div className="space-y-3">
                       {order.items?.map((item) => (
                         <div key={item.id} className="flex items-center gap-4 bg-white rounded-lg p-3">
-                          <div className="w-2 h-12 bg-gradient-to-b from-maroon-900 to-gold-500 rounded-full flex-shrink-0" />
+                          <div className="w-2 h-12 bg-gradient-to-b from-maroon-500 to-maroon-300 rounded-full flex-shrink-0" />
                           <div className="flex-1 min-w-0">
                             <p className="font-body text-sm font-medium text-maroon-900 truncate">{item.product_name}</p>
                             <p className="font-body text-xs text-gray-500">

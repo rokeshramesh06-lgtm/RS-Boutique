@@ -86,9 +86,9 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-ivory-100 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-white flex items-center justify-center px-4">
         <div className="text-center max-w-md">
-          <div className="w-24 h-24 mx-auto mb-6 bg-ivory-200 rounded-full flex items-center justify-center">
+          <div className="w-24 h-24 mx-auto mb-6 bg-maroon-50 rounded-full flex items-center justify-center">
             <svg className="w-12 h-12 text-maroon-900/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
             </svg>
@@ -99,7 +99,7 @@ export default function CartPage() {
           </p>
           <Link
             href="/shop"
-            className="inline-flex items-center gap-2 px-8 py-3.5 bg-maroon-900 text-white font-body font-semibold text-sm tracking-wide uppercase rounded-lg hover:bg-maroon-800 transition-colors"
+            className="inline-flex items-center gap-2 px-8 py-3.5 bg-maroon-700 text-white font-body font-semibold text-sm tracking-wide uppercase rounded-lg hover:bg-maroon-600 transition-colors"
           >
             Continue Shopping
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -112,21 +112,21 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-ivory-100">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <div className="bg-gradient-to-r from-maroon-900 via-maroon-800 to-maroon-900 py-10 px-4">
+      <div className="bg-gradient-to-br from-maroon-50 via-white to-rose-50 border-b border-maroon-100 py-10 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center gap-2 text-ivory-200/60 font-body text-sm mb-3">
-            <Link href="/" className="hover:text-gold-400 transition-colors">Home</Link>
+          <div className="flex items-center gap-2 text-gray-400 font-body text-sm mb-3">
+            <Link href="/" className="hover:text-maroon-700 transition-colors">Home</Link>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-            <span className="text-gold-400">Shopping Bag</span>
+            <span className="text-maroon-700">Shopping Bag</span>
           </div>
-          <h1 className="font-display text-4xl md:text-5xl font-bold text-white">
+          <h1 className="font-display text-4xl md:text-5xl font-bold text-maroon-900">
             Shopping Bag
           </h1>
-          <p className="font-body text-ivory-200/60 text-sm mt-1">{itemCount} {itemCount === 1 ? 'item' : 'items'}</p>
+          <p className="font-body text-gray-500 text-sm mt-1">{itemCount} {itemCount === 1 ? 'item' : 'items'}</p>
         </div>
       </div>
 
@@ -277,7 +277,7 @@ export default function CartPage() {
                       <button
                         onClick={handleApplyCoupon}
                         disabled={couponLoading || !couponCode.trim()}
-                        className="px-4 py-2.5 bg-maroon-900 text-white font-body text-sm font-semibold rounded-lg hover:bg-maroon-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-4 py-2.5 bg-maroon-700 text-white font-body text-sm font-semibold rounded-lg hover:bg-maroon-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {couponLoading ? '...' : 'Apply'}
                       </button>
@@ -309,7 +309,7 @@ export default function CartPage() {
               {/* Checkout Button */}
               <button
                 onClick={handleCheckout}
-                className="w-full py-4 bg-gold-500 text-maroon-900 font-body font-semibold text-sm tracking-wide uppercase rounded-lg hover:bg-gold-400 hover:shadow-lg transition-all duration-300"
+                className="w-full py-4 bg-maroon-900 text-white font-body font-semibold text-sm tracking-wide uppercase rounded-lg hover:bg-maroon-800 hover:shadow-lg transition-all duration-300"
               >
                 Proceed to Checkout
               </button>

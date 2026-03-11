@@ -69,16 +69,16 @@ export default function ProductDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-ivory-100">
+      <div className="min-h-screen bg-white">
         <div className="max-w-7xl mx-auto px-4 py-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <div className="aspect-square bg-ivory-300 rounded-xl animate-pulse" />
+            <div className="aspect-square bg-gray-100 rounded-xl animate-pulse" />
             <div className="space-y-6">
-              <div className="h-4 bg-ivory-300 rounded w-1/4 animate-pulse" />
-              <div className="h-10 bg-ivory-300 rounded w-3/4 animate-pulse" />
-              <div className="h-8 bg-ivory-300 rounded w-1/3 animate-pulse" />
-              <div className="h-20 bg-ivory-300 rounded animate-pulse" />
-              <div className="h-12 bg-ivory-300 rounded w-1/2 animate-pulse" />
+              <div className="h-4 bg-gray-100 rounded w-1/4 animate-pulse" />
+              <div className="h-10 bg-gray-100 rounded w-3/4 animate-pulse" />
+              <div className="h-8 bg-gray-100 rounded w-1/3 animate-pulse" />
+              <div className="h-20 bg-gray-100 rounded animate-pulse" />
+              <div className="h-12 bg-gray-100 rounded w-1/2 animate-pulse" />
             </div>
           </div>
         </div>
@@ -88,13 +88,13 @@ export default function ProductDetailPage() {
 
   if (error || !product) {
     return (
-      <div className="min-h-screen bg-ivory-100 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
           <h2 className="font-display text-3xl text-maroon-900 mb-4">Product Not Found</h2>
           <p className="font-body text-gray-500 mb-6">The product you are looking for does not exist.</p>
           <Link
             href="/shop"
-            className="px-6 py-3 bg-maroon-900 text-white font-body text-sm rounded-lg hover:bg-maroon-800 transition-colors"
+            className="px-6 py-3 bg-maroon-700 text-white font-body text-sm rounded-lg hover:bg-maroon-600 transition-colors"
           >
             Back to Shop
           </Link>
@@ -104,7 +104,7 @@ export default function ProductDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-ivory-100">
+    <div className="min-h-screen bg-white">
       {/* Breadcrumb */}
       <div className="max-w-7xl mx-auto px-4 py-4">
         <div className="flex items-center gap-2 text-sm font-body text-gray-500">
@@ -124,7 +124,7 @@ export default function ProductDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
           {/* Image Area */}
           <div className="relative">
-            <div className="aspect-square rounded-xl overflow-hidden relative bg-ivory-200">
+            <div className="aspect-square rounded-xl overflow-hidden relative bg-gray-50">
               {product.image_url ? (
                 <Image
                   src={product.image_url}
@@ -148,8 +148,8 @@ export default function ProductDetailPage() {
 
               {/* Discount badge */}
               {discount > 0 && (
-                <div className="absolute top-4 right-4 w-14 h-14 bg-gold-500 rounded-full flex items-center justify-center shadow-md">
-                  <span className="font-body text-maroon-900 text-xs font-bold">-{discount}%</span>
+                <div className="absolute top-4 right-4 w-14 h-14 bg-rose-500 rounded-full flex items-center justify-center shadow-md">
+                  <span className="font-body text-white text-xs font-bold">-{discount}%</span>
                 </div>
               )}
             </div>
@@ -186,7 +186,7 @@ export default function ProductDetailPage() {
             </p>
 
             {/* Divider */}
-            <div className="w-full h-[1px] bg-ivory-300 mb-6" />
+            <div className="w-full h-[1px] bg-gray-100 mb-6" />
 
             {/* Size Selector */}
             {sizes.length > 0 && (
@@ -224,7 +224,7 @@ export default function ProductDetailPage() {
                       key={color}
                       onClick={() => setSelectedColor(color)}
                       className={`relative w-10 h-10 rounded-full transition-all duration-200 ${
-                        selectedColor === color ? 'ring-2 ring-offset-2 ring-gold-500' : 'hover:scale-110'
+                        selectedColor === color ? 'ring-2 ring-offset-2 ring-maroon-500' : 'hover:scale-110'
                       }`}
                       style={{ backgroundColor: getColorHex(color) }}
                       title={color}
@@ -249,14 +249,14 @@ export default function ProductDetailPage() {
               <div className="inline-flex items-center border border-ivory-300 rounded-lg overflow-hidden bg-white">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="px-4 py-2.5 text-maroon-900 hover:bg-ivory-200 transition-colors font-body font-semibold"
+                  className="px-4 py-2.5 text-maroon-900 hover:bg-gray-50 transition-colors font-body font-semibold"
                 >
                   -
                 </button>
                 <span className="px-6 py-2.5 font-body text-sm font-semibold border-x border-ivory-300">{quantity}</span>
                 <button
                   onClick={() => setQuantity(quantity + 1)}
-                  className="px-4 py-2.5 text-maroon-900 hover:bg-ivory-200 transition-colors font-body font-semibold"
+                  className="px-4 py-2.5 text-maroon-900 hover:bg-gray-50 transition-colors font-body font-semibold"
                 >
                   +
                 </button>
@@ -270,7 +270,7 @@ export default function ProductDetailPage() {
               className={`w-full py-4 rounded-lg font-body font-semibold text-base tracking-wide uppercase transition-all duration-300 ${
                 addedToCart
                   ? 'bg-green-600 text-white'
-                  : 'bg-gold-500 text-maroon-900 hover:bg-gold-400 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed'
+                  : 'bg-maroon-900 text-white hover:bg-maroon-800 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed'
               }`}
             >
               {addedToCart ? (
@@ -296,7 +296,7 @@ export default function ProductDetailPage() {
               <div className="border-b border-ivory-300 last:border-b-0">
                 <button
                   onClick={() => setOpenSection(openSection === 'details' ? null : 'details')}
-                  className="w-full flex items-center justify-between px-5 py-4 bg-white hover:bg-ivory-100 transition-colors"
+                  className="w-full flex items-center justify-between px-5 py-4 bg-white hover:bg-white transition-colors"
                 >
                   <span className="font-body text-sm font-semibold text-maroon-900">Product Details</span>
                   <svg className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${openSection === 'details' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -319,7 +319,7 @@ export default function ProductDetailPage() {
               <div className="border-b border-ivory-300 last:border-b-0">
                 <button
                   onClick={() => setOpenSection(openSection === 'care' ? null : 'care')}
-                  className="w-full flex items-center justify-between px-5 py-4 bg-white hover:bg-ivory-100 transition-colors"
+                  className="w-full flex items-center justify-between px-5 py-4 bg-white hover:bg-white transition-colors"
                 >
                   <span className="font-body text-sm font-semibold text-maroon-900">Care Instructions</span>
                   <svg className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${openSection === 'care' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -343,7 +343,7 @@ export default function ProductDetailPage() {
               <div>
                 <button
                   onClick={() => setOpenSection(openSection === 'shipping' ? null : 'shipping')}
-                  className="w-full flex items-center justify-between px-5 py-4 bg-white hover:bg-ivory-100 transition-colors"
+                  className="w-full flex items-center justify-between px-5 py-4 bg-white hover:bg-white transition-colors"
                 >
                   <span className="font-body text-sm font-semibold text-maroon-900">Shipping Information</span>
                   <svg className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${openSection === 'shipping' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -367,7 +367,7 @@ export default function ProductDetailPage() {
             {/* Back to Shop */}
             <Link
               href="/shop"
-              className="mt-6 inline-flex items-center gap-2 font-body text-sm text-maroon-900 hover:text-gold-600 transition-colors"
+              className="mt-6 inline-flex items-center gap-2 font-body text-sm text-maroon-900 hover:text-maroon-600 transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
