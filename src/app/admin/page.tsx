@@ -6,8 +6,8 @@ import { useAuth } from '@/context/AuthContext';
 import { Product, Coupon, Order } from '@/types';
 
 const formatPrice = (price: number) => '₹' + price.toLocaleString('en-IN');
-const CATEGORIES = ['Sarees', 'Lehengas', 'Suits', 'Kurtis', 'Kurtas', 'Sherwanis', 'Indo-Western', 'Dupattas'];
-const GENDERS = ['Men', 'Women', 'Unisex'];
+const CATEGORIES = ['Sarees', 'Churidar', 'Nighty'];
+const GENDERS = ['Women'];
 const SIZE_OPTIONS = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'Free Size'];
 const ORDER_STATUSES = ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'];
 

@@ -54,7 +54,6 @@ export default function FilterSidebar({
 
   const hasActiveFilters =
     selectedCategory !== '' ||
-    selectedGender !== '' ||
     priceRange[0] > 0 ||
     priceRange[1] < maxPrice;
 
@@ -93,34 +92,6 @@ export default function FilterSidebar({
           Refine Selection
         </h2>
         <div className="mt-1 h-px w-16 bg-gold-500/60" />
-      </div>
-
-      {/* Gender Filter */}
-      <div>
-        <h3 className="mb-3 font-display text-sm font-semibold uppercase tracking-wider text-maroon-900">
-          Gender
-        </h3>
-        <div className="flex flex-wrap gap-2">
-          {genderOptions.map((gender) => {
-            const isSelected =
-              gender === 'All' ? selectedGender === '' : selectedGender === gender;
-            return (
-              <button
-                key={gender}
-                onClick={() =>
-                  onGenderChange(gender === 'All' ? '' : gender)
-                }
-                className={`rounded-full px-5 py-2 font-body text-sm font-medium transition-all duration-200 ${
-                  isSelected
-                    ? 'bg-maroon-900 text-ivory-100 shadow-md shadow-maroon-900/20'
-                    : 'bg-ivory-200 text-[#6B6B6B] hover:bg-ivory-300 hover:text-maroon-800'
-                }`}
-              >
-                {gender}
-              </button>
-            );
-          })}
-        </div>
       </div>
 
       {/* Categories Filter */}

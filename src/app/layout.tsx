@@ -22,16 +22,15 @@ const jost = Jost({
 });
 
 export const metadata: Metadata = {
-  title: 'RS Boutique | Premium Indian Clothing',
+  title: 'RS Boutique | Women\'s Indian Clothing',
   description:
-    'Discover exquisite Indian fashion at RS Boutique. Shop premium sarees, lehengas, kurtas, sherwanis, and more — crafted with the finest fabrics and timeless designs for men and women.',
+    'Discover exquisite women\'s Indian fashion at RS Boutique. Shop premium sarees, churidars, and nightwear — crafted with the finest fabrics and timeless designs.',
   keywords: [
     'Indian clothing',
     'sarees',
-    'lehengas',
-    'kurtas',
-    'sherwanis',
-    'Indian fashion',
+    'churidar',
+    'nighty',
+    'women Indian fashion',
     'premium ethnic wear',
     'RS Boutique',
   ],

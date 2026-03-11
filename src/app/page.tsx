@@ -9,9 +9,8 @@ const formatPrice = (price: number) => '₹' + price.toLocaleString('en-IN');
 
 const FEATURED_CATEGORIES = [
   { name: 'Sarees', gradient: 'from-[#8B1A1A] to-[#C9A84C]', desc: 'Timeless drapes of elegance' },
-  { name: 'Lehengas', gradient: 'from-[#D4337B] to-[#E8A87C]', desc: 'Regal bridal & festive wear' },
-  { name: 'Kurtas', gradient: 'from-[#1A5276] to-[#48C9B0]', desc: 'Effortless everyday charm' },
-  { name: 'Sherwanis', gradient: 'from-[#1A1A3E] to-[#C9A84C]', desc: 'The epitome of royal grace' },
+  { name: 'Churidar', gradient: 'from-[#2D6A4F] to-[#74C69D]', desc: 'Graceful ethnic charm' },
+  { name: 'Nighty', gradient: 'from-[#7B2FBE] to-[#D4A5FF]', desc: 'Comfort meets elegance' },
 ];
 
 const TESTIMONIALS = [
@@ -22,15 +21,15 @@ const TESTIMONIALS = [
     rating: 5,
   },
   {
-    name: 'Arjun Mehta',
-    city: 'Delhi',
-    text: 'I ordered a sherwani for my wedding and it was nothing short of perfection. The fabric quality, the embroidery, everything was beyond my expectations. Truly a royal experience.',
+    name: 'Ananya Iyer',
+    city: 'Chennai',
+    text: 'The churidar sets are gorgeous and so comfortable! I ordered three different designs and each one fits perfectly. The fabric quality is outstanding for the price.',
     rating: 5,
   },
   {
     name: 'Kavitha Reddy',
     city: 'Hyderabad',
-    text: 'RS Boutique has become my go-to for all festive occasions. Their lehenga collection is exquisite and the customer service is warm and personal. Highly recommended!',
+    text: 'RS Boutique has become my go-to for all occasions. Their nightwear collection is so soft and luxurious. The customer service is warm and personal. Highly recommended!',
     rating: 5,
   },
 ];
@@ -135,24 +134,24 @@ export default function HomePage() {
           </p>
 
           <p className="font-body text-ivory-200/70 text-base md:text-lg max-w-2xl mx-auto mb-10 leading-relaxed">
-            Discover an exquisite collection of handcrafted Indian clothing,
-            from timeless sarees and regal sherwanis to contemporary Indo-Western ensembles.
-            Each piece tells a story of heritage and artistry.
+            Discover an exquisite collection of handcrafted Indian women&apos;s clothing,
+            from timeless sarees and elegant churidars to luxurious nightwear.
+            Each piece tells a story of heritage and femininity.
           </p>
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              href="/shop?gender=Women"
+              href="/shop"
               className="group relative px-10 py-4 bg-gold-500 text-maroon-900 font-body font-semibold text-base tracking-wide uppercase rounded-sm overflow-hidden transition-all duration-300 hover:bg-gold-400 hover:shadow-[0_0_30px_rgba(201,168,76,0.3)]"
             >
-              <span className="relative z-10">Shop Women</span>
+              <span className="relative z-10">Shop Collection</span>
             </Link>
             <Link
-              href="/shop?gender=Men"
+              href="/shop?category=Sarees"
               className="group px-10 py-4 border-2 border-gold-500/60 text-gold-400 font-body font-semibold text-base tracking-wide uppercase rounded-sm transition-all duration-300 hover:bg-gold-500/10 hover:border-gold-500"
             >
-              <span className="relative z-10">Shop Men</span>
+              <span className="relative z-10">Explore Sarees</span>
             </Link>
           </div>
 
@@ -248,7 +247,7 @@ export default function HomePage() {
           </div>
 
           {/* Category Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {FEATURED_CATEGORIES.map((cat, idx) => (
               <Link
                 key={cat.name}

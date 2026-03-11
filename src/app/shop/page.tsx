@@ -7,7 +7,7 @@ import { Product } from '@/types';
 import ProductCard from '@/components/ProductCard';
 import FilterSidebar from '@/components/FilterSidebar';
 
-const CATEGORIES = ['Sarees', 'Lehengas', 'Suits', 'Kurtis', 'Kurtas', 'Sherwanis', 'Indo-Western', 'Dupattas'];
+const CATEGORIES = ['Sarees', 'Churidar', 'Nighty'];
 
 const SORT_OPTIONS = [
   { label: 'Newest', value: 'newest' },
@@ -21,7 +21,7 @@ function ShopContent() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
-  const [selectedGender, setSelectedGender] = useState(searchParams.get('gender') || '');
+  const [selectedGender, setSelectedGender] = useState('');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 100000]);
   const [maxPrice] = useState(100000);
   const [sort, setSort] = useState('newest');
@@ -85,7 +85,7 @@ function ShopContent() {
             Our Collection
           </h1>
           <p className="font-body text-ivory-200/70 text-sm">
-            Discover the finest Indian fashion, handcrafted with love and tradition.
+            Discover the finest women&apos;s Indian fashion — sarees, churidars, and nightwear.
           </p>
         </div>
       </div>
@@ -143,7 +143,7 @@ function ShopContent() {
         </div>
 
         {/* Active Filters */}
-        {(selectedCategory || selectedGender || search) && (
+        {(selectedCategory || search) && (
           <div className="flex flex-wrap items-center gap-2 mb-6">
             <span className="font-body text-sm text-gray-500">Active filters:</span>
             {selectedCategory && (
@@ -152,17 +152,6 @@ function ShopContent() {
                 className="flex items-center gap-1 px-3 py-1 bg-maroon-900/10 text-maroon-900 rounded-full font-body text-xs hover:bg-maroon-900/20 transition-colors"
               >
                 {selectedCategory}
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            )}
-            {selectedGender && (
-              <button
-                onClick={() => setSelectedGender('')}
-                className="flex items-center gap-1 px-3 py-1 bg-maroon-900/10 text-maroon-900 rounded-full font-body text-xs hover:bg-maroon-900/20 transition-colors"
-              >
-                {selectedGender}
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>

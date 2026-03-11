@@ -69,8 +69,9 @@ export default function Navbar() {
   const navLinks = [
     { href: '/', label: 'Home' },
     { href: '/shop', label: 'Shop' },
-    { href: '/shop?gender=Men', label: 'Men' },
-    { href: '/shop?gender=Women', label: 'Women' },
+    { href: '/shop?category=Sarees', label: 'Sarees' },
+    { href: '/shop?category=Churidar', label: 'Churidar' },
+    { href: '/shop?category=Nighty', label: 'Nighty' },
   ];
 
   const isActive = (href: string) => {
@@ -485,7 +486,7 @@ export default function Navbar() {
             {/* Drawer Footer */}
             <div className="absolute bottom-0 left-0 right-0 border-t border-gold-200/30 bg-ivory-200/50 px-6 py-4">
               <p className="text-center text-xs text-[#6B6B6B]">
-                Premium Indian Fashion
+                Women&apos;s Indian Fashion
               </p>
             </div>
           </div>

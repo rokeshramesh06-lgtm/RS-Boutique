@@ -72,13 +72,6 @@ export default function ProductCard({ product }: ProductCardProps) {
             </div>
           )}
 
-          {/* Gender Tag */}
-          <div className="absolute bottom-3 left-3 z-10">
-            <span className="inline-block rounded-full bg-black/20 px-2.5 py-0.5 font-body text-[10px] font-medium text-white/90 backdrop-blur-sm">
-              {product.gender}
-            </span>
-          </div>
-
           {/* Hover Overlay with Quick Add */}
           <div className="absolute inset-0 flex items-end justify-center bg-maroon-900/0 pb-16 transition-all duration-500 group-hover:bg-maroon-900/20">
             <button

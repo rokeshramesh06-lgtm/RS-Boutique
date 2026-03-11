@@ -103,11 +103,8 @@ export default function Footer() {
             <ul className="space-y-2.5">
               {[
                 { label: 'Sarees', href: '/shop?category=Sarees' },
-                { label: 'Lehengas', href: '/shop?category=Lehengas' },
-                { label: 'Kurtas', href: '/shop?category=Kurtas' },
-                { label: 'Sherwanis', href: '/shop?category=Sherwanis' },
-                { label: 'Suits', href: '/shop?category=Suits' },
-                { label: 'Jewelry', href: '/shop?category=Jewelry' },
+                { label: 'Churidar', href: '/shop?category=Churidar' },
+                { label: 'Nighty', href: '/shop?category=Nighty' },
               ].map((link) => (
                 <li key={link.href}>
                   <Link
