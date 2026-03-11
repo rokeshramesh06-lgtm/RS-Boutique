@@ -40,8 +40,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ['Cormorant Garamond', 'serif'],
-        body: ['Jost', 'sans-serif'],
+        display: ['Playfair Display', 'serif'],
+        body: ['DM Sans', 'sans-serif'],
       },
     },
   },
