@@ -8,9 +8,21 @@ import ProductCard from '@/components/ProductCard';
 const formatPrice = (price: number) => '₹' + price.toLocaleString('en-IN');
 
 const FEATURED_CATEGORIES = [
-  { name: 'Sarees', gradient: 'from-[#8B1A1A] to-[#C9A84C]', desc: 'Timeless drapes of elegance' },
-  { name: 'Churidar', gradient: 'from-[#2D6A4F] to-[#74C69D]', desc: 'Graceful ethnic charm' },
-  { name: 'Nighty', gradient: 'from-[#7B2FBE] to-[#D4A5FF]', desc: 'Comfort meets elegance' },
+  {
+    name: 'Sarees',
+    desc: 'Timeless drapes of elegance',
+    image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=800&q=80',
+  },
+  {
+    name: 'Churidar',
+    desc: 'Graceful ethnic charm',
+    image: 'https://images.unsplash.com/photo-1583391733975-dea78d273247?w=800&q=80',
+  },
+  {
+    name: 'Nighty',
+    desc: 'Comfort meets elegance',
+    image: 'https://images.unsplash.com/photo-1616001655906-dba290767af0?w=800&q=80',
+  },
 ];
 
 const TESTIMONIALS = [
@@ -254,8 +266,12 @@ export default function HomePage() {
                 href={`/shop?category=${cat.name}`}
                 className={`group relative h-72 rounded-lg overflow-hidden transition-all duration-500 delay-${idx * 100} ${categories.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
               >
-                <div className={`absolute inset-0 bg-gradient-to-br ${cat.gradient} transition-transform duration-500 group-hover:scale-110`} />
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-300" />
+                <img
+                  src={cat.image}
+                  alt={cat.name}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors duration-300" />
 
                 {/* Decorative corner */}
                 <div className="absolute top-4 left-4 w-8 h-8 border-t border-l border-white/30" />
