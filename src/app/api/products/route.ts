@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from '@/lib/db';
+import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,53 +13,54 @@ export async function GET(request: NextRequest) {
     const sort = searchParams.get('sort');
     const search = searchParams.get('search');
 
-    const db = getDb();
+    const supabase = await createClient();
 
-    let query = 'SELECT * FROM products WHERE 1=1';
-    const params: (string | number)[] = [];
+    let query = supabase.from('products').select('*');
 
     if (category) {
-      query += ' AND category = ?';
-      params.push(category);
+      query = query.eq('category', category);
     }
 
     if (gender) {
-      query += ' AND gender = ?';
-      params.push(gender);
+      query = query.eq('gender', gender);
     }
 
     if (minPrice) {
-      query += ' AND price >= ?';
-      params.push(Number(minPrice));
+      query = query.gte('price', Number(minPrice));
     }
 
     if (maxPrice) {
-      query += ' AND price <= ?';
-      params.push(Number(maxPrice));
+      query = query.lte('price', Number(maxPrice));
     }
 
     if (search) {
-      query += ' AND (name LIKE ? OR description LIKE ? OR category LIKE ?)';
-      const searchTerm = `%${search}%`;
-      params.push(searchTerm, searchTerm, searchTerm);
+      query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%,category.ilike.%${search}%`);
     }
 
     // Sorting
     switch (sort) {
       case 'price-asc':
-        query += ' ORDER BY price ASC';
+        query = query.order('price', { ascending: true });
         break;
       case 'price-desc':
-        query += ' ORDER BY price DESC';
+        query = query.order('price', { ascending: false });
         break;
       case 'newest':
-        query += ' ORDER BY created_at DESC';
+        query = query.order('created_at', { ascending: false });
         break;
       default:
-        query += ' ORDER BY featured DESC, created_at DESC';
+        query = query.order('featured', { ascending: false }).order('created_at', { ascending: false });
     }
 
-    const products = db.prepare(query).all(...params);
+    const { data: products, error } = await query;
+
+    if (error) {
+      console.error('Supabase products error:', error);
+      return NextResponse.json(
+        { error: 'Failed to fetch products' },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({ products });
   } catch (error) {

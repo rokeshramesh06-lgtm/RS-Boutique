@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
-import { getDb } from '@/lib/db';
-import { createToken } from '@/lib/auth';
+import { createClient } from '@/lib/supabase/server';
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,40 +12,37 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const db = getDb();
+    const supabase = await createClient();
 
-    // Check if user already exists
-    const existingUser = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
-    if (existingUser) {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { name },
+      },
+    });
+
+    if (error) {
+      if (error.message.includes('already registered')) {
+        return NextResponse.json(
+          { error: 'An account with this email already exists' },
+          { status: 409 }
+        );
+      }
       return NextResponse.json(
-        { error: 'An account with this email already exists' },
-        { status: 409 }
+        { error: error.message },
+        { status: 400 }
       );
     }
 
-    // Hash password and create user
-    const passwordHash = bcrypt.hashSync(password, 10);
-    const result = db.prepare(
-      'INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)'
-    ).run(name, email, passwordHash, 'user');
+    // Fetch the created profile
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('id, name, email, role, created_at')
+      .eq('id', data.user!.id)
+      .single();
 
-    const user = db.prepare(
-      'SELECT id, name, email, role, created_at FROM users WHERE id = ?'
-    ).get(result.lastInsertRowid);
-
-    // Create JWT token
-    const token = await createToken(Number(result.lastInsertRowid));
-
-    const response = NextResponse.json({ user });
-    response.cookies.set('auth-token', token, {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 60 * 60 * 24 * 7,
-    });
-
-    return response;
+    return NextResponse.json({ user: profile });
   } catch (error) {
     console.error('Signup error:', error);
     return NextResponse.json(

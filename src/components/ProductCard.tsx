@@ -20,8 +20,8 @@ export default function ProductCard({ product }: ProductCardProps) {
         )
       : 0;
 
-  const sizes = product.sizes ? product.sizes.split(',').map((s) => s.trim()) : [];
-  const colors = product.colors ? product.colors.split(',').map((c) => c.trim()) : [];
+  const sizes = Array.isArray(product.sizes) ? product.sizes : [];
+  const colors = Array.isArray(product.colors) ? product.colors : [];
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -114,7 +114,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
 
           {/* Out of stock indicator */}
-          {product.in_stock === 0 && (
+          {!product.in_stock && (
             <p className="mt-1.5 font-body text-xs font-medium text-maroon-600">
               Out of Stock
             </p>

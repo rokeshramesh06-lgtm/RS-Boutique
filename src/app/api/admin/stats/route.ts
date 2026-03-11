@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
-import { getDb } from '@/lib/db';
-import { getCurrentUser } from '@/lib/auth';
+import { createClient } from '@/lib/supabase/server';
 
 export async function GET() {
   try {
-    const user = await getCurrentUser();
+    const supabase = await createClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       return NextResponse.json(
         { error: 'Authentication required' },
@@ -12,33 +13,58 @@ export async function GET() {
       );
     }
 
-    if (user.role !== 'admin') {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
+    if (profile?.role !== 'admin') {
       return NextResponse.json(
         { error: 'Admin access required' },
         { status: 403 }
       );
     }
 
-    const db = getDb();
+    // Get total orders count
+    const { count: totalOrders } = await supabase
+      .from('orders')
+      .select('*', { count: 'exact', head: true });
 
-    const totalOrders = (db.prepare('SELECT COUNT(*) as count FROM orders').get() as { count: number }).count;
-    const totalRevenue = (db.prepare('SELECT COALESCE(SUM(total), 0) as total FROM orders').get() as { total: number }).total;
-    const totalProducts = (db.prepare('SELECT COUNT(*) as count FROM products').get() as { count: number }).count;
-    const totalUsers = (db.prepare('SELECT COUNT(*) as count FROM users').get() as { count: number }).count;
+    // Get total revenue
+    const { data: revenueData } = await supabase
+      .from('orders')
+      .select('total');
+    const totalRevenue = (revenueData || []).reduce((sum, order) => sum + (order.total || 0), 0);
 
-    const recentOrders = db.prepare(
-      `SELECT orders.*, users.name as user_name, users.email as user_email
-       FROM orders
-       JOIN users ON orders.user_id = users.id
-       ORDER BY orders.created_at DESC
-       LIMIT 5`
-    ).all();
+    // Get total products count
+    const { count: totalProducts } = await supabase
+      .from('products')
+      .select('*', { count: 'exact', head: true });
+
+    // Get total users count
+    const { count: totalUsers } = await supabase
+      .from('profiles')
+      .select('*', { count: 'exact', head: true });
+
+    // Get recent orders with user info
+    const { data: recentOrdersRaw } = await supabase
+      .from('orders')
+      .select('*, profiles(name, email)')
+      .order('created_at', { ascending: false })
+      .limit(5);
+
+    const recentOrders = (recentOrdersRaw || []).map(({ profiles, ...order }) => ({
+      ...order,
+      user_name: (profiles as { name: string; email: string } | null)?.name || null,
+      user_email: (profiles as { name: string; email: string } | null)?.email || null,
+    }));
 
     return NextResponse.json({
-      totalOrders,
+      totalOrders: totalOrders || 0,
       totalRevenue,
-      totalProducts,
-      totalUsers,
+      totalProducts: totalProducts || 0,
+      totalUsers: totalUsers || 0,
       recentOrders,
     });
   } catch (error) {

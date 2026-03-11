@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from '@/lib/db';
-import { getCurrentUser } from '@/lib/auth';
+import { createClient } from '@/lib/supabase/server';
 
 export async function GET() {
   try {
-    const user = await getCurrentUser();
+    const supabase = await createClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       return NextResponse.json(
         { error: 'Authentication required' },
@@ -12,28 +13,38 @@ export async function GET() {
       );
     }
 
-    if (user.role !== 'admin') {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
+    if (profile?.role !== 'admin') {
       return NextResponse.json(
         { error: 'Admin access required' },
         { status: 403 }
       );
     }
 
-    const db = getDb();
+    const { data: orders, error } = await supabase
+      .from('orders')
+      .select('*, profiles(name, email), order_items(*)')
+      .order('created_at', { ascending: false });
 
-    const orders = db.prepare(
-      `SELECT orders.*, users.name as user_name, users.email as user_email
-       FROM orders
-       JOIN users ON orders.user_id = users.id
-       ORDER BY orders.created_at DESC`
-    ).all() as Array<Record<string, unknown>>;
+    if (error) {
+      console.error('Supabase admin orders error:', error);
+      return NextResponse.json(
+        { error: 'Failed to fetch orders' },
+        { status: 500 }
+      );
+    }
 
-    // Attach order items to each order
-    const getOrderItems = db.prepare('SELECT * FROM order_items WHERE order_id = ?');
-
-    const ordersWithItems = orders.map((order) => ({
+    // Map to rename profiles fields and order_items
+    const ordersWithItems = (orders || []).map(({ profiles, order_items, ...order }) => ({
       ...order,
-      items: getOrderItems.all(order.id as number),
+      user_name: (profiles as { name: string; email: string } | null)?.name || null,
+      user_email: (profiles as { name: string; email: string } | null)?.email || null,
+      items: order_items,
     }));
 
     return NextResponse.json({ orders: ordersWithItems });
@@ -48,7 +59,9 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
-    const user = await getCurrentUser();
+    const supabase = await createClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       return NextResponse.json(
         { error: 'Authentication required' },
@@ -56,7 +69,13 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    if (user.role !== 'admin') {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
+    if (profile?.role !== 'admin') {
       return NextResponse.json(
         { error: 'Admin access required' },
         { status: 403 }
@@ -80,27 +99,36 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const db = getDb();
+    const { data: order, error } = await supabase
+      .from('orders')
+      .update({ status })
+      .eq('id', id)
+      .select('*, profiles(name, email)')
+      .single();
 
-    // Check if order exists
-    const existing = db.prepare('SELECT * FROM orders WHERE id = ?').get(id);
-    if (!existing) {
+    if (error || !order) {
+      if (error?.code === 'PGRST116') {
+        return NextResponse.json(
+          { error: 'Order not found' },
+          { status: 404 }
+        );
+      }
+      console.error('Supabase update order error:', error);
       return NextResponse.json(
-        { error: 'Order not found' },
-        { status: 404 }
+        { error: 'Failed to update order' },
+        { status: 500 }
       );
     }
 
-    db.prepare('UPDATE orders SET status = ? WHERE id = ?').run(status, id);
+    // Map profile fields
+    const { profiles: orderProfiles, ...orderData } = order;
+    const mappedOrder = {
+      ...orderData,
+      user_name: (orderProfiles as { name: string; email: string } | null)?.name || null,
+      user_email: (orderProfiles as { name: string; email: string } | null)?.email || null,
+    };
 
-    const order = db.prepare(
-      `SELECT orders.*, users.name as user_name, users.email as user_email
-       FROM orders
-       JOIN users ON orders.user_id = users.id
-       WHERE orders.id = ?`
-    ).get(id);
-
-    return NextResponse.json({ order });
+    return NextResponse.json({ order: mappedOrder });
   } catch (error) {
     console.error('Admin update order error:', error);
     return NextResponse.json(

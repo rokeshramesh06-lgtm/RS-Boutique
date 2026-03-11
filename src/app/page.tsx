@@ -78,14 +78,11 @@ export default function HomePage() {
   const newsletter = useIntersectionObserver();
 
   useEffect(() => {
-    // Seed database on first load
-    fetch('/api/seed').catch(() => {});
-
     // Fetch featured products
     fetch('/api/products')
       .then((res) => res.json())
       .then((data) => {
-        const featured = (data.products || []).filter((p: Product) => p.featured === 1);
+        const featured = (data.products || []).filter((p: Product) => p.featured);
         setFeaturedProducts(featured.length > 0 ? featured.slice(0, 8) : (data.products || []).slice(0, 8));
       })
       .catch(() => {})
@@ -422,10 +419,11 @@ export default function HomePage() {
         className={`py-20 px-4 relative overflow-hidden transition-all duration-700 delay-400 ${newsletter.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
       >
         {/* Background */}
-        <div className="absolute inset-0 bg-gradient-to-r from-maroon-900 via-maroon-800 to-maroon-900" />
-        <div className="absolute inset-0 opacity-[0.03]" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23C9A84C' fill-opacity='1'%3E%3Ccircle cx='20' cy='20' r='2'/%3E%3C/g%3E%3C/svg%3E")`,
-        }} />
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url('/WhatsApp Image 2026-03-11 at 8.17.22 PM.jpeg')` }}
+        />
+        <div className="absolute inset-0 bg-maroon-900/60" />
 
         <div className="relative z-10 max-w-2xl mx-auto text-center">
           <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-3">

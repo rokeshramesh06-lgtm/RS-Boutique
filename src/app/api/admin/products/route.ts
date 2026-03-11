@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from '@/lib/db';
-import { getCurrentUser } from '@/lib/auth';
+import { createClient } from '@/lib/supabase/server';
 
 export async function GET() {
   try {
-    const user = await getCurrentUser();
+    const supabase = await createClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       return NextResponse.json(
         { error: 'Authentication required' },
@@ -12,15 +13,31 @@ export async function GET() {
       );
     }
 
-    if (user.role !== 'admin') {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
+    if (profile?.role !== 'admin') {
       return NextResponse.json(
         { error: 'Admin access required' },
         { status: 403 }
       );
     }
 
-    const db = getDb();
-    const products = db.prepare('SELECT * FROM products ORDER BY created_at DESC').all();
+    const { data: products, error } = await supabase
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Supabase admin products error:', error);
+      return NextResponse.json(
+        { error: 'Failed to fetch products' },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({ products });
   } catch (error) {
@@ -34,7 +51,9 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await getCurrentUser();
+    const supabase = await createClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       return NextResponse.json(
         { error: 'Authentication required' },
@@ -42,7 +61,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (user.role !== 'admin') {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
+    if (profile?.role !== 'admin') {
       return NextResponse.json(
         { error: 'Admin access required' },
         { status: 403 }
@@ -71,27 +96,32 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const db = getDb();
+    const { data: product, error } = await supabase
+      .from('products')
+      .insert({
+        name,
+        description,
+        price,
+        original_price,
+        image_url: image_url || '',
+        image_gradient: image_gradient || '',
+        category,
+        gender,
+        sizes: sizes || [],
+        colors: colors || [],
+        in_stock: in_stock ?? true,
+        featured: featured ?? false,
+      })
+      .select()
+      .single();
 
-    const result = db.prepare(
-      `INSERT INTO products (name, description, price, original_price, image_url, image_gradient, category, gender, sizes, colors, in_stock, featured)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-    ).run(
-      name,
-      description,
-      price,
-      original_price,
-      image_url || '',
-      image_gradient || '',
-      category,
-      gender,
-      sizes || '[]',
-      colors || '[]',
-      in_stock ?? 1,
-      featured ?? 0
-    );
-
-    const product = db.prepare('SELECT * FROM products WHERE id = ?').get(result.lastInsertRowid);
+    if (error) {
+      console.error('Supabase create product error:', error);
+      return NextResponse.json(
+        { error: 'Failed to create product' },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({ product }, { status: 201 });
   } catch (error) {

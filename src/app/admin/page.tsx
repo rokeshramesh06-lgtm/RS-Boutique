@@ -149,12 +149,12 @@ export default function AdminPage() {
       original_price: parseFloat(productForm.original_price),
       category: productForm.category,
       gender: productForm.gender,
-      sizes: productForm.sizes.join(', '),
-      colors: productForm.colors,
+      sizes: productForm.sizes,
+      colors: productForm.colors.split(',').map((c: string) => c.trim()).filter(Boolean),
       image_url: productForm.image_url,
       image_gradient: productForm.image_gradient,
-      in_stock: productForm.in_stock ? 1 : 0,
-      featured: productForm.featured ? 1 : 0,
+      in_stock: productForm.in_stock,
+      featured: productForm.featured,
     };
 
     try {
@@ -190,12 +190,12 @@ export default function AdminPage() {
       original_price: product.original_price.toString(),
       category: product.category,
       gender: product.gender,
-      sizes: product.sizes.split(',').map((s) => s.trim()),
-      colors: product.colors,
+      sizes: product.sizes,
+      colors: product.colors.join(', '),
       image_url: product.image_url || '',
       image_gradient: product.image_gradient,
-      in_stock: product.in_stock === 1,
-      featured: product.featured === 1,
+      in_stock: product.in_stock,
+      featured: product.featured,
     });
     setEditingProduct(product.id);
     setShowProductForm(true);
@@ -229,7 +229,7 @@ export default function AdminPage() {
           min_order: parseFloat(couponForm.min_order) || 0,
           max_uses: parseInt(couponForm.max_uses) || 100,
           expires_at: couponForm.expires_at,
-          active: couponForm.active ? 1 : 0,
+          active: couponForm.active,
         }),
       });
 

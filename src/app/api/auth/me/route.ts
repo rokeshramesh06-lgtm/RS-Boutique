@@ -1,11 +1,23 @@
 import { NextResponse } from 'next/server';
-import { getCurrentUser } from '@/lib/auth';
+import { createClient } from '@/lib/supabase/server';
 
 export async function GET() {
   try {
-    const user = await getCurrentUser();
+    const supabase = await createClient();
 
-    return NextResponse.json({ user: user || null });
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ user: null });
+    }
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('id, name, email, role, created_at')
+      .eq('id', user.id)
+      .single();
+
+    return NextResponse.json({ user: profile });
   } catch (error) {
     console.error('Auth me error:', error);
     return NextResponse.json(

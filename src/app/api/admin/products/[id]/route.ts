@@ -1,21 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from '@/lib/db';
-import { getCurrentUser } from '@/lib/auth';
+import { createClient } from '@/lib/supabase/server';
+
+async function getAdminUser(supabase: Awaited<ReturnType<typeof createClient>>) {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+  if (profile?.role !== 'admin') return null;
+  return user;
+}
 
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const user = await getCurrentUser();
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
+    const supabase = await createClient();
+    const adminUser = await getAdminUser(supabase);
 
-    if (user.role !== 'admin') {
+    if (!adminUser) {
       return NextResponse.json(
         { error: 'Admin access required' },
         { status: 403 }
@@ -23,16 +25,6 @@ export async function PUT(
     }
 
     const { id } = await params;
-    const db = getDb();
-
-    // Check if product exists
-    const existing = db.prepare('SELECT * FROM products WHERE id = ?').get(Number(id));
-    if (!existing) {
-      return NextResponse.json(
-        { error: 'Product not found' },
-        { status: 404 }
-      );
-    }
 
     const {
       name,
@@ -49,38 +41,41 @@ export async function PUT(
       featured,
     } = await request.json();
 
-    db.prepare(
-      `UPDATE products SET
-        name = COALESCE(?, name),
-        description = COALESCE(?, description),
-        price = COALESCE(?, price),
-        original_price = COALESCE(?, original_price),
-        image_url = COALESCE(?, image_url),
-        image_gradient = COALESCE(?, image_gradient),
-        category = COALESCE(?, category),
-        gender = COALESCE(?, gender),
-        sizes = COALESCE(?, sizes),
-        colors = COALESCE(?, colors),
-        in_stock = COALESCE(?, in_stock),
-        featured = COALESCE(?, featured)
-       WHERE id = ?`
-    ).run(
-      name ?? null,
-      description ?? null,
-      price ?? null,
-      original_price ?? null,
-      image_url ?? null,
-      image_gradient ?? null,
-      category ?? null,
-      gender ?? null,
-      sizes ?? null,
-      colors ?? null,
-      in_stock ?? null,
-      featured ?? null,
-      Number(id)
-    );
+    // Build update object with only defined fields
+    const updates: Record<string, unknown> = {};
+    if (name !== undefined) updates.name = name;
+    if (description !== undefined) updates.description = description;
+    if (price !== undefined) updates.price = price;
+    if (original_price !== undefined) updates.original_price = original_price;
+    if (image_url !== undefined) updates.image_url = image_url;
+    if (image_gradient !== undefined) updates.image_gradient = image_gradient;
+    if (category !== undefined) updates.category = category;
+    if (gender !== undefined) updates.gender = gender;
+    if (sizes !== undefined) updates.sizes = sizes;
+    if (colors !== undefined) updates.colors = colors;
+    if (in_stock !== undefined) updates.in_stock = in_stock;
+    if (featured !== undefined) updates.featured = featured;
 
-    const product = db.prepare('SELECT * FROM products WHERE id = ?').get(Number(id));
+    const { data: product, error } = await supabase
+      .from('products')
+      .update(updates)
+      .eq('id', Number(id))
+      .select()
+      .single();
+
+    if (error || !product) {
+      if (error?.code === 'PGRST116') {
+        return NextResponse.json(
+          { error: 'Product not found' },
+          { status: 404 }
+        );
+      }
+      console.error('Supabase update product error:', error);
+      return NextResponse.json(
+        { error: 'Failed to update product' },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({ product });
   } catch (error) {
@@ -97,15 +92,10 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const user = await getCurrentUser();
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
+    const supabase = await createClient();
+    const adminUser = await getAdminUser(supabase);
 
-    if (user.role !== 'admin') {
+    if (!adminUser) {
       return NextResponse.json(
         { error: 'Admin access required' },
         { status: 403 }
@@ -113,18 +103,19 @@ export async function DELETE(
     }
 
     const { id } = await params;
-    const db = getDb();
 
-    // Check if product exists
-    const existing = db.prepare('SELECT * FROM products WHERE id = ?').get(Number(id));
-    if (!existing) {
+    const { error } = await supabase
+      .from('products')
+      .delete()
+      .eq('id', Number(id));
+
+    if (error) {
+      console.error('Supabase delete product error:', error);
       return NextResponse.json(
-        { error: 'Product not found' },
-        { status: 404 }
+        { error: 'Failed to delete product' },
+        { status: 500 }
       );
     }
-
-    db.prepare('DELETE FROM products WHERE id = ?').run(Number(id));
 
     return NextResponse.json({ success: true });
   } catch (error) {

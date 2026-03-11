@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from '@/lib/db';
+import { createClient } from '@/lib/supabase/server';
 
 export async function GET(
   request: NextRequest,
@@ -7,11 +7,15 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const db = getDb();
+    const supabase = await createClient();
 
-    const product = db.prepare('SELECT * FROM products WHERE id = ?').get(Number(id));
+    const { data: product, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('id', Number(id))
+      .single();
 
-    if (!product) {
+    if (error || !product) {
       return NextResponse.json(
         { error: 'Product not found' },
         { status: 404 }

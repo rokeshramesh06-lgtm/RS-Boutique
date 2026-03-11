@@ -1,5 +1,5 @@
 export interface User {
-  id: number;
+  id: string;
   name: string;
   email: string;
   role: 'user' | 'admin';
@@ -16,10 +16,10 @@ export interface Product {
   image_gradient: string;
   category: string;
   gender: 'Men' | 'Women' | 'Unisex';
-  sizes: string;
-  colors: string;
-  in_stock: number;
-  featured: number;
+  sizes: string[];
+  colors: string[];
+  in_stock: boolean;
+  featured: boolean;
   created_at: string;
 }
 
@@ -32,7 +32,7 @@ export interface CartItem {
 
 export interface Order {
   id: number;
-  user_id: number;
+  user_id: string;
   total: number;
   subtotal: number;
   discount: number;
@@ -65,6 +65,6 @@ export interface Coupon {
   min_order: number;
   max_uses: number;
   used_count: number;
-  active: number;
+  active: boolean;
   expires_at: string;
 }

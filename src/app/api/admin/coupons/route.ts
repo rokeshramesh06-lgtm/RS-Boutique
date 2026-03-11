@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from '@/lib/db';
-import { getCurrentUser } from '@/lib/auth';
+import { createClient } from '@/lib/supabase/server';
 
 export async function GET() {
   try {
-    const user = await getCurrentUser();
+    const supabase = await createClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       return NextResponse.json(
         { error: 'Authentication required' },
@@ -12,15 +13,31 @@ export async function GET() {
       );
     }
 
-    if (user.role !== 'admin') {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
+    if (profile?.role !== 'admin') {
       return NextResponse.json(
         { error: 'Admin access required' },
         { status: 403 }
       );
     }
 
-    const db = getDb();
-    const coupons = db.prepare('SELECT * FROM coupons ORDER BY created_at DESC').all();
+    const { data: coupons, error } = await supabase
+      .from('coupons')
+      .select('*')
+      .order('id', { ascending: false });
+
+    if (error) {
+      console.error('Supabase admin coupons error:', error);
+      return NextResponse.json(
+        { error: 'Failed to fetch coupons' },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({ coupons });
   } catch (error) {
@@ -34,7 +51,9 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await getCurrentUser();
+    const supabase = await createClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       return NextResponse.json(
         { error: 'Authentication required' },
@@ -42,7 +61,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (user.role !== 'admin') {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
+    if (profile?.role !== 'admin') {
       return NextResponse.json(
         { error: 'Admin access required' },
         { status: 403 }
@@ -66,10 +91,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const db = getDb();
-
     // Check if coupon code already exists
-    const existing = db.prepare('SELECT id FROM coupons WHERE code = ?').get(code);
+    const { data: existing } = await supabase
+      .from('coupons')
+      .select('id')
+      .eq('code', code)
+      .single();
+
     if (existing) {
       return NextResponse.json(
         { error: 'A coupon with this code already exists' },
@@ -77,20 +105,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const result = db.prepare(
-      `INSERT INTO coupons (code, discount_percent, discount_amount, min_order, max_uses, used_count, active, expires_at)
-       VALUES (?, ?, ?, ?, ?, 0, ?, ?)`
-    ).run(
-      code,
-      discount_percent || 0,
-      discount_amount || 0,
-      min_order || 0,
-      max_uses || 0,
-      active ?? 1,
-      expires_at
-    );
+    const { data: coupon, error } = await supabase
+      .from('coupons')
+      .insert({
+        code,
+        discount_percent: discount_percent || 0,
+        discount_amount: discount_amount || 0,
+        min_order: min_order || 0,
+        max_uses: max_uses || 0,
+        used_count: 0,
+        active: active ?? true,
+        expires_at,
+      })
+      .select()
+      .single();
 
-    const coupon = db.prepare('SELECT * FROM coupons WHERE id = ?').get(result.lastInsertRowid);
+    if (error) {
+      console.error('Supabase create coupon error:', error);
+      return NextResponse.json(
+        { error: 'Failed to create coupon' },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({ coupon }, { status: 201 });
   } catch (error) {

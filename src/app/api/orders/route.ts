@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from '@/lib/db';
-import { getCurrentUser } from '@/lib/auth';
+import { createClient } from '@/lib/supabase/server';
 
 export async function GET() {
   try {
-    const user = await getCurrentUser();
+    const supabase = await createClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       return NextResponse.json(
         { error: 'Authentication required' },
@@ -12,20 +13,24 @@ export async function GET() {
       );
     }
 
-    const db = getDb();
+    const { data: orders, error } = await supabase
+      .from('orders')
+      .select('*, order_items(*)')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false });
 
-    const orders = db.prepare(
-      'SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC'
-    ).all(user.id) as Array<Record<string, unknown>>;
+    if (error) {
+      console.error('Supabase orders error:', error);
+      return NextResponse.json(
+        { error: 'Failed to fetch orders' },
+        { status: 500 }
+      );
+    }
 
-    // Attach order items to each order
-    const getOrderItems = db.prepare(
-      'SELECT * FROM order_items WHERE order_id = ?'
-    );
-
-    const ordersWithItems = orders.map((order) => ({
+    // Rename order_items to items for frontend compatibility
+    const ordersWithItems = (orders || []).map(({ order_items, ...order }) => ({
       ...order,
-      items: getOrderItems.all(order.id as number),
+      items: order_items,
     }));
 
     return NextResponse.json({ orders: ordersWithItems });
@@ -40,7 +45,9 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await getCurrentUser();
+    const supabase = await createClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       return NextResponse.json(
         { error: 'Authentication required' },
@@ -57,54 +64,60 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const db = getDb();
-
     // Create the order
-    const orderResult = db.prepare(
-      `INSERT INTO orders (user_id, total, subtotal, discount, status, shipping_address, payment_method, coupon_code)
-       VALUES (?, ?, ?, ?, 'pending', ?, ?, ?)`
-    ).run(
-      user.id,
-      total,
-      subtotal,
-      discount || 0,
-      shippingAddress,
-      paymentMethod,
-      couponCode || null
-    );
+    const { data: order, error: orderError } = await supabase
+      .from('orders')
+      .insert({
+        user_id: user.id,
+        total,
+        subtotal,
+        discount: discount || 0,
+        status: 'pending',
+        shipping_address: shippingAddress,
+        payment_method: paymentMethod,
+        coupon_code: couponCode || null,
+      })
+      .select()
+      .single();
 
-    const orderId = orderResult.lastInsertRowid;
+    if (orderError || !order) {
+      console.error('Order insert error:', orderError);
+      return NextResponse.json(
+        { error: 'Failed to create order' },
+        { status: 500 }
+      );
+    }
 
     // Insert order items
-    const insertItem = db.prepare(
-      `INSERT INTO order_items (order_id, product_id, product_name, quantity, size, color, price)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`
-    );
+    const orderItems = items.map((item: { productId: number; productName: string; quantity: number; size: string; color: string; price: number }) => ({
+      order_id: order.id,
+      product_id: item.productId,
+      product_name: item.productName,
+      quantity: item.quantity,
+      size: item.size,
+      color: item.color,
+      price: item.price,
+    }));
 
-    for (const item of items) {
-      insertItem.run(
-        orderId,
-        item.productId,
-        item.productName,
-        item.quantity,
-        item.size,
-        item.color,
-        item.price
+    const { data: insertedItems, error: itemsError } = await supabase
+      .from('order_items')
+      .insert(orderItems)
+      .select();
+
+    if (itemsError) {
+      console.error('Order items insert error:', itemsError);
+      return NextResponse.json(
+        { error: 'Failed to create order items' },
+        { status: 500 }
       );
     }
 
     // Increment coupon used_count if a coupon was used
     if (couponCode) {
-      db.prepare(
-        'UPDATE coupons SET used_count = used_count + 1 WHERE code = ?'
-      ).run(couponCode);
+      await supabase.rpc('increment_coupon_usage', { coupon_code: couponCode });
     }
 
-    // Fetch the created order with items
-    const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
-    const orderItems = db.prepare('SELECT * FROM order_items WHERE order_id = ?').all(orderId);
-
-    const fullOrder = { ...order as Record<string, unknown>, items: orderItems };
+    const fullOrder = { ...order, items: insertedItems };
 
     return NextResponse.json({ order: fullOrder }, { status: 201 });
   } catch (error) {

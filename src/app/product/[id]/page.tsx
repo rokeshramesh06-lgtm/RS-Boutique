@@ -33,8 +33,8 @@ export default function ProductDetailPage() {
       })
       .then((data) => {
         setProduct(data.product);
-        const sizes = data.product.sizes?.split(',').map((s: string) => s.trim()).filter(Boolean);
-        const colors = data.product.colors?.split(',').map((c: string) => c.trim()).filter(Boolean);
+        const sizes = Array.isArray(data.product.sizes) ? data.product.sizes : [];
+        const colors = Array.isArray(data.product.colors) ? data.product.colors : [];
         if (sizes?.length) setSelectedSize(sizes[0]);
         if (colors?.length) setSelectedColor(colors[0]);
       })
@@ -49,8 +49,8 @@ export default function ProductDetailPage() {
     setTimeout(() => setAddedToCart(false), 3000);
   };
 
-  const sizes = product?.sizes?.split(',').map((s) => s.trim()).filter(Boolean) || [];
-  const colors = product?.colors?.split(',').map((c) => c.trim()).filter(Boolean) || [];
+  const sizes = Array.isArray(product?.sizes) ? product.sizes : [];
+  const colors = Array.isArray(product?.colors) ? product.colors : [];
   const discount = product ? Math.round(((product.original_price - product.price) / product.original_price) * 100) : 0;
 
   const COLOR_MAP: Record<string, string> = {
