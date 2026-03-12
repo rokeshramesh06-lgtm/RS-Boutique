@@ -84,8 +84,10 @@ export default function AdminPage() {
   const [productError, setProductError] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
 
-  // Image upload
+  // Image upload & AI analysis
   const [uploading, setUploading] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [generatingCover, setGeneratingCover] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -262,30 +264,105 @@ export default function AdminPage() {
     }
   };
 
+  // Convert file to base64 data URL
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
+  // Generate cover image with a model wearing the garment
+  const generateCover = async (base64: string, productName: string, category: string) => {
+    setGeneratingCover(true);
+    try {
+      const res = await fetch('/api/admin/generate-cover', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image_base64: base64, product_name: productName, category }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Cover generation failed');
+
+      if (data.url) {
+        setProductForm((prev) => ({ ...prev, image_url: data.url }));
+      }
+    } catch (err: unknown) {
+      console.error('Cover generation failed:', err);
+      // Non-blocking — keeps the original uploaded image
+    } finally {
+      setGeneratingCover(false);
+    }
+  };
+
+  // AI-powered image analysis, then generate cover
+  const analyzeAndGenerateCover = async (base64: string) => {
+    setAnalyzing(true);
+    let productName = '';
+    let category = 'Sarees';
+    try {
+      const res = await fetch('/api/admin/analyze-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image_base64: base64 }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Analysis failed');
+
+      productName = data.name || '';
+      category = data.category || 'Sarees';
+
+      setProductForm((prev) => ({
+        ...prev,
+        name: data.name || prev.name,
+        description: data.description || prev.description,
+        price: data.price ? String(data.price) : prev.price,
+        original_price: data.original_price ? String(data.original_price) : prev.original_price,
+        category: data.category || prev.category,
+        colors: data.colors || prev.colors,
+        sizes: data.sizes || prev.sizes,
+      }));
+    } catch (err: unknown) {
+      console.error('AI analysis failed:', err);
+    } finally {
+      setAnalyzing(false);
+    }
+
+    // After analysis, generate cover with model wearing the garment
+    generateCover(base64, productName, category);
+  };
+
   // Image upload handler
   const handleImageUpload = async (file: File) => {
     setUploading(true);
     setProductError('');
 
     try {
-      const formData = new FormData();
-      formData.append('image', file);
+      // Start base64 conversion and upload in parallel
+      const [base64, uploadRes] = await Promise.all([
+        fileToBase64(file),
+        fetch('/api/admin/upload', {
+          method: 'POST',
+          body: (() => { const fd = new FormData(); fd.append('image', file); return fd; })(),
+        }),
+      ]);
 
-      const res = await fetch('/api/admin/upload', {
-        method: 'POST',
-        body: formData,
-      });
+      const data = await uploadRes.json();
 
-      const data = await res.json();
-
-      if (!res.ok) {
+      if (!uploadRes.ok) {
         throw new Error(data.error || 'Upload failed');
       }
 
+      // Set original upload as placeholder while AI works
       setProductForm((prev) => ({ ...prev, image_url: data.url }));
+      setUploading(false);
+
+      // Chain: analyze product → generate cover with model wearing it
+      analyzeAndGenerateCover(base64);
     } catch (err: unknown) {
       setProductError(err instanceof Error ? err.message : 'Upload failed');
-    } finally {
       setUploading(false);
     }
   };
@@ -627,6 +704,21 @@ export default function AdminPage() {
 
                         <div>
                           <label className="font-body text-sm font-medium text-gray-700 mb-1.5 block">Product Image</label>
+
+                          {/* AI status banners */}
+                          {(analyzing || generatingCover) && (
+                            <div className="mb-3 flex items-center gap-3 p-3 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-xl">
+                              <div className="w-5 h-5 border-2 border-purple-300 border-t-purple-600 rounded-full animate-spin flex-shrink-0" />
+                              <div>
+                                <p className="font-body text-sm font-medium text-purple-800">
+                                  {analyzing ? 'AI is analyzing your image...' : 'Generating cover with model wearing it...'}
+                                </p>
+                                <p className="font-body text-xs text-purple-500">
+                                  {analyzing ? 'Auto-filling product details' : 'This may take a few seconds'}
+                                </p>
+                              </div>
+                            </div>
+                          )}
 
                           {/* Image preview */}
                           {productForm.image_url && (

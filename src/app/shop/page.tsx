@@ -29,6 +29,15 @@ function ShopContent() {
   const [searchInput, setSearchInput] = useState(searchParams.get('search') || '');
   const [filterOpen, setFilterOpen] = useState(false);
 
+  // Sync state when URL search params change (e.g. clicking category links from home page)
+  useEffect(() => {
+    const paramCategory = searchParams.get('category') || '';
+    const paramSearch = searchParams.get('search') || '';
+    setSelectedCategory(paramCategory);
+    setSearch(paramSearch);
+    setSearchInput(paramSearch);
+  }, [searchParams]);
+
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {

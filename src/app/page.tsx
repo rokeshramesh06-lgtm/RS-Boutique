@@ -97,8 +97,44 @@ export default function HomePage() {
     }
   };
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'RS Boutique',
+    url: 'https://rsboutique.net',
+    logo: 'https://rsboutique.net/favicon.ico',
+    description:
+      'Premium Indian women\'s clothing store offering handcrafted sarees, churidars, and nightwear.',
+    sameAs: [],
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'customer service',
+      availableLanguage: ['English', 'Hindi', 'Tamil'],
+    },
+  };
+
+  const webSiteJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'RS Boutique',
+    url: 'https://rsboutique.net',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: 'https://rsboutique.net/shop?search={search_term_string}',
+      'query-input': 'required name=search_term_string',
+    },
+  };
+
   return (
     <div className="min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteJsonLd) }}
+      />
       {/* Hero Section */}
       <section className="relative h-[90vh] flex items-center justify-center overflow-hidden">
         {/* Background image */}

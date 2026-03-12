@@ -22,7 +22,10 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'RS Boutique | Women\'s Indian Clothing',
+  title: {
+    default: 'RS Boutique | Premium Women\'s Indian Clothing',
+    template: '%s | RS Boutique',
+  },
   description:
     'Discover exquisite women\'s Indian fashion at RS Boutique. Shop premium sarees, churidars, and nightwear — crafted with the finest fabrics and timeless designs.',
   keywords: [
@@ -33,7 +36,52 @@ export const metadata: Metadata = {
     'women Indian fashion',
     'premium ethnic wear',
     'RS Boutique',
+    'buy sarees online',
+    'Indian ethnic wear',
+    'women nightwear India',
+    'handcrafted Indian clothing',
   ],
+  metadataBase: new URL('https://rsboutique.net'),
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_IN',
+    siteName: 'RS Boutique',
+    title: 'RS Boutique | Premium Women\'s Indian Clothing',
+    description:
+      'Shop premium sarees, churidars, and nightwear at RS Boutique. Handcrafted Indian fashion with timeless designs.',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'RS Boutique - Premium Indian Fashion',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'RS Boutique | Premium Women\'s Indian Clothing',
+    description:
+      'Shop premium sarees, churidars, and nightwear. Handcrafted Indian fashion with timeless designs.',
+    images: ['/og-image.jpg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: 'YOUR_GOOGLE_VERIFICATION_CODE',
+  },
 };
 
 export default function RootLayout({
@@ -46,6 +94,10 @@ export default function RootLayout({
       lang="en"
       className={`${playfairDisplay.variable} ${dmSans.variable}`}
     >
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#6B0F1A" />
+      </head>
       <body className="font-body bg-ivory-100 text-[#1A1A1A] antialiased">
         <AuthProvider>
           <CartProvider>
