@@ -47,10 +47,12 @@ STRICT RULES:
 - The model wears the EXACT garment from the input image — same colors, patterns, fabric, and design
 - Clean solid or soft gradient studio background (white, cream, or light gray)
 - Professional studio lighting, soft and even
-- Graceful, confident standing pose — full body or 3/4 body shot showing the ${garmentType} properly
+- The model must be CENTERED in the frame with equal space on both sides
+- Full body shot from head to toe, model standing upright facing the camera
+- The model should be vertically centered too — not cropped at top or bottom
 - Photorealistic, high-resolution result suitable for an online store
 
-Output: a single clean product photograph, nothing else.`;
+Output: a single clean centered product photograph, nothing else.`;
 
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
