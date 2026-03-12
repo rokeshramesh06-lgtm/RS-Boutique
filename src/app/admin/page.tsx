@@ -486,12 +486,12 @@ export default function AdminPage() {
     const results = await Promise.all(queued.map(processBulkItem));
     const needCovers = results.filter((r): r is NonNullable<typeof r> => r !== null);
 
-    // Phase 2: Generate covers 2 at a time to avoid Vercel function timeouts
+    // Phase 2: Generate covers 20 at a time
     const updateItem = (itemId: string, updates: Partial<BulkItem>) => {
       setBulkItems((prev) => prev.map((i) => (i.id === itemId ? { ...i, ...updates } : i)));
     };
 
-    const coverConcurrency = 2;
+    const coverConcurrency = 20;
     for (let i = 0; i < needCovers.length; i += coverConcurrency) {
       const batch = needCovers.slice(i, i + coverConcurrency);
       await Promise.all(batch.map(async (item) => {
