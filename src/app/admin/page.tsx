@@ -47,7 +47,7 @@ interface BulkItem {
   id: string;
   file: File;
   preview: string;
-  status: 'queued' | 'uploading' | 'analyzing' | 'creating' | 'done' | 'error';
+  status: 'queued' | 'uploading' | 'analyzing' | 'creating' | 'generating' | 'done' | 'error';
   productName?: string;
   error?: string;
 }
@@ -464,6 +464,33 @@ export default function AdminPage() {
         const err = await createRes.json();
         throw new Error(err.error || 'Failed to create product');
       }
+      const createData = await createRes.json();
+
+      // Step 4: Generate cover image with model wearing the garment
+      updateItem({ status: 'generating' });
+      try {
+        const coverRes = await fetch('/api/admin/generate-cover', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            image_base64: base64,
+            product_name: productBody.name,
+            category: productBody.category,
+          }),
+        });
+        const coverData = await coverRes.json();
+        if (coverRes.ok && coverData.url) {
+          // Update the product's image_url with the generated cover
+          await fetch(`/api/admin/products/${createData.product.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image_url: coverData.url }),
+          });
+        }
+      } catch {
+        // Non-blocking — keeps the original uploaded image
+        console.error('Cover generation failed for', productBody.name);
+      }
 
       updateItem({ status: 'done' });
     } catch (err: unknown) {
@@ -475,12 +502,8 @@ export default function AdminPage() {
     setBulkProcessing(true);
     const queued = bulkItems.filter((i) => i.status === 'queued' || i.status === 'error');
 
-    // Process 3 at a time for speed
-    const concurrency = 3;
-    for (let i = 0; i < queued.length; i += concurrency) {
-      const batch = queued.slice(i, i + concurrency);
-      await Promise.all(batch.map(processBulkItem));
-    }
+    // Process all in parallel — no rate limits
+    await Promise.all(queued.map(processBulkItem));
 
     setBulkProcessing(false);
     fetchData();
@@ -1123,7 +1146,7 @@ export default function AdminPage() {
                                       <div className="flex flex-col items-center gap-1.5">
                                         <div className="w-6 h-6 border-2 border-white/40 border-t-white rounded-full animate-spin" />
                                         <span className="font-body text-[10px] font-semibold text-white capitalize">
-                                          {item.status === 'uploading' ? 'Uploading' : item.status === 'analyzing' ? 'AI Analyzing' : 'Creating'}
+                                          {item.status === 'uploading' ? 'Uploading' : item.status === 'analyzing' ? 'AI Analyzing' : item.status === 'generating' ? 'Generating Cover' : 'Creating'}
                                         </span>
                                       </div>
                                     </div>
