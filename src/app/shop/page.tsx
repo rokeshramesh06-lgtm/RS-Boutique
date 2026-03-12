@@ -137,7 +137,7 @@ function ShopContent() {
   return (
     <div className="min-h-screen bg-ivory-100">
       {/* Hero Header — pull up behind the transparent navbar */}
-      <div className="relative h-[55vh] min-h-[400px] max-h-[560px] overflow-hidden -mt-[70px]">
+      <div className="relative h-[60vh] min-h-[420px] max-h-[640px] overflow-hidden -mt-[70px]">
         {/* Current background */}
         <Image
           src={currentBg}
@@ -145,7 +145,7 @@ function ShopContent() {
           fill
           priority
           sizes="100vw"
-          className="object-cover"
+          className="object-cover object-top"
         />
 
         {/* Next background (crossfade) */}
@@ -155,7 +155,7 @@ function ShopContent() {
             alt=""
             fill
             sizes="100vw"
-            className={`object-cover transition-opacity duration-700 ease-in-out ${
+            className={`object-cover object-top transition-opacity duration-700 ease-in-out ${
               transitioning ? 'opacity-100' : 'opacity-0'
             }`}
           />
