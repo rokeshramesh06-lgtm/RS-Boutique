@@ -83,8 +83,13 @@ function ShopContent() {
   return (
     <div className="min-h-screen bg-ivory-100">
       {/* Page Header */}
-      <div className="bg-gradient-to-r from-maroon-900 via-maroon-800 to-maroon-900 py-12 px-4">
-        <div className="max-w-7xl mx-auto">
+      <div className="relative py-16 px-4 overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: "url('/shop-header.jpeg')" }}
+        />
+        <div className="absolute inset-0 bg-maroon-900/50" />
+        <div className="relative max-w-7xl mx-auto">
           {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-ivory-200/60 font-body text-sm mb-4">
             <Link href="/" className="hover:text-gold-400 transition-colors">Home</Link>
