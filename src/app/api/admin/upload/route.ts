@@ -4,6 +4,8 @@ import { existsSync, mkdirSync, writeFileSync } from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 
+export const dynamic = 'force-dynamic';
+
 function getUploadDir(): string {
   // Use /tmp on Vercel, local uploads/ dir otherwise
   const base = existsSync('/tmp') ? '/tmp' : process.cwd();
