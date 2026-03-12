@@ -1,19 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { existsSync, mkdirSync, writeFileSync } from 'fs';
-import path from 'path';
 import crypto from 'crypto';
 
 export const dynamic = 'force-dynamic';
-
-function getUploadDir(): string {
-  const base = existsSync('/tmp') ? '/tmp' : process.cwd();
-  const dir = path.join(base, 'uploads');
-  if (!existsSync(dir)) {
-    mkdirSync(dir, { recursive: true });
-  }
-  return dir;
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -94,7 +83,6 @@ Generate ONLY the image, no text.`;
       return NextResponse.json({ error: 'No image generated' }, { status: 502 });
     }
 
-    // Extract base64 data from the response
     const generatedDataUrl = images[0].image_url?.url;
     if (!generatedDataUrl) {
       return NextResponse.json({ error: 'Invalid image response' }, { status: 502 });
@@ -109,16 +97,29 @@ Generate ONLY the image, no text.`;
     const ext = match[1] === 'jpeg' ? 'jpg' : match[1];
     const base64Data = match[2];
     const buffer = Buffer.from(base64Data, 'base64');
+    const contentType = `image/${match[1]}`;
 
-    // Save to uploads directory
+    // Upload to Supabase Storage
     const filename = `cover-${Date.now()}-${crypto.randomBytes(8).toString('hex')}.${ext}`;
-    const uploadDir = getUploadDir();
-    const filePath = path.join(uploadDir, filename);
-    writeFileSync(filePath, buffer);
+    const storagePath = `covers/${filename}`;
 
-    const imageUrl = `/api/uploads/${filename}`;
+    const { error: uploadError } = await supabase.storage
+      .from('products')
+      .upload(storagePath, buffer, {
+        contentType,
+        upsert: false,
+      });
 
-    return NextResponse.json({ url: imageUrl, filename });
+    if (uploadError) {
+      console.error('Supabase storage upload error:', uploadError);
+      return NextResponse.json({ error: 'Failed to save generated image' }, { status: 500 });
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('products')
+      .getPublicUrl(storagePath);
+
+    return NextResponse.json({ url: publicUrl, filename });
   } catch (error) {
     console.error('Generate cover error:', error);
     return NextResponse.json({ error: 'Failed to generate cover image' }, { status: 500 });

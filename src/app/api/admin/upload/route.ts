@@ -1,20 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { existsSync, mkdirSync, writeFileSync } from 'fs';
-import path from 'path';
 import crypto from 'crypto';
 
 export const dynamic = 'force-dynamic';
-
-function getUploadDir(): string {
-  // Use /tmp on Vercel, local uploads/ dir otherwise
-  const base = existsSync('/tmp') ? '/tmp' : process.cwd();
-  const dir = path.join(base, 'uploads');
-  if (!existsSync(dir)) {
-    mkdirSync(dir, { recursive: true });
-  }
-  return dir;
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -60,27 +48,40 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
       return NextResponse.json(
-        { error: 'File too large. Maximum size is 5MB' },
+        { error: 'File too large. Maximum size is 10MB' },
         { status: 400 }
       );
     }
 
     const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
     const filename = `${Date.now()}-${crypto.randomBytes(8).toString('hex')}.${ext}`;
-
-    const uploadDir = getUploadDir();
-    const filePath = path.join(uploadDir, filename);
+    const storagePath = `originals/${filename}`;
 
     const buffer = Buffer.from(await file.arrayBuffer());
-    writeFileSync(filePath, buffer);
 
-    // Return the URL that serves the file via our API route
-    const imageUrl = `/api/uploads/${filename}`;
+    const { error: uploadError } = await supabase.storage
+      .from('products')
+      .upload(storagePath, buffer, {
+        contentType: file.type,
+        upsert: false,
+      });
 
-    return NextResponse.json({ url: imageUrl, filename }, { status: 201 });
+    if (uploadError) {
+      console.error('Supabase storage upload error:', uploadError);
+      return NextResponse.json(
+        { error: 'Failed to upload image' },
+        { status: 500 }
+      );
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('products')
+      .getPublicUrl(storagePath);
+
+    return NextResponse.json({ url: publicUrl, filename }, { status: 201 });
   } catch (error) {
     console.error('Upload error:', error);
     return NextResponse.json(
