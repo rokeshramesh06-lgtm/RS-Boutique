@@ -38,17 +38,19 @@ export async function POST(request: NextRequest) {
     const garmentType = category || 'saree';
     const name = product_name || garmentType;
 
-    const prompt = `You are a professional fashion photographer. Take this ${garmentType} product image and generate a stunning e-commerce product photo of an Indian woman model elegantly wearing/draping this exact ${garmentType}.
+    const prompt = `Generate an e-commerce product photo of exactly ONE Indian woman model wearing this ${garmentType}.
 
-Requirements:
-- The model should be wearing the EXACT garment shown in the input image with its exact colors, patterns, and design
-- Professional studio lighting with a clean, minimal background (soft gradient or solid)
-- The model should have a graceful, confident pose suitable for an ethnic wear e-commerce store
-- Full or 3/4 body shot showing the garment properly
-- High-quality, photorealistic result
-- The product name is "${name}" - style accordingly
+STRICT RULES:
+- EXACTLY ONE person in the image — no second person, no reflections, no shadows of other people
+- ZERO text, watermarks, labels, captions, logos, or any written content anywhere in the image
+- NO borders, frames, collages, split screens, or before/after comparisons
+- The model wears the EXACT garment from the input image — same colors, patterns, fabric, and design
+- Clean solid or soft gradient studio background (white, cream, or light gray)
+- Professional studio lighting, soft and even
+- Graceful, confident standing pose — full body or 3/4 body shot showing the ${garmentType} properly
+- Photorealistic, high-resolution result suitable for an online store
 
-Generate ONLY the image, no text.`;
+Output: a single clean product photograph, nothing else.`;
 
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
