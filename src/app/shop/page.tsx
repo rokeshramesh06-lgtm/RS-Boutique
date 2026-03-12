@@ -48,7 +48,6 @@ function ShopContent() {
 
   useEffect(() => {
     if (selectedCategory) {
-      // Stop cycling when a category is selected
       if (cycleTimer.current) clearInterval(cycleTimer.current);
       const target = CATEGORY_BACKGROUNDS[selectedCategory];
       if (target !== currentBg) {
@@ -62,7 +61,6 @@ function ShopContent() {
         return () => clearTimeout(timer);
       }
     } else {
-      // Auto-cycle through all 3 backgrounds
       const allBgs = ['/saree-backdrop.jpeg', '/churidar-backdrop.jpeg', '/nighty-backdrop.jpeg'];
       cycleIndex.current = 0;
       setCurrentBg(allBgs[0]);
@@ -138,8 +136,8 @@ function ShopContent() {
 
   return (
     <div className="min-h-screen bg-ivory-100">
-      {/* Hero Header with dynamic background */}
-      <div className="relative h-[50vh] min-h-[380px] max-h-[520px] overflow-hidden">
+      {/* Hero Header */}
+      <div className="relative h-[55vh] min-h-[400px] max-h-[560px] overflow-hidden">
         {/* Current background */}
         <Image
           src={currentBg}
@@ -163,14 +161,13 @@ function ShopContent() {
           />
         )}
 
-        {/* Gradient overlays */}
-        <div className="absolute inset-0 bg-gradient-to-b from-maroon-900/60 via-maroon-900/30 to-maroon-900/70" />
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-ivory-100 to-transparent" />
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-black/40" />
 
-        {/* Content */}
-        <div className="relative h-full flex flex-col justify-between max-w-7xl mx-auto px-4 py-8">
-          {/* Top: Breadcrumb */}
-          <div className="flex items-center gap-2 text-ivory-200/70 font-body text-sm animate-[fadeIn_0.6s_ease-out]">
+        {/* Content — breadcrumb, title, subtitle only */}
+        <div className="relative h-full flex flex-col justify-center max-w-7xl mx-auto px-4">
+          {/* Breadcrumb */}
+          <div className="flex items-center gap-2 text-ivory-200/70 font-body text-sm mb-6">
             <Link href="/" className="hover:text-gold-400 transition-colors">Home</Link>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -178,82 +175,79 @@ function ShopContent() {
             <span className="text-gold-400">Shop</span>
           </div>
 
-          {/* Center: Title + Description */}
-          <div className="animate-[fadeSlideUp_0.8s_ease-out]">
-            <h1 className="font-display text-5xl md:text-7xl font-bold text-white mb-3 drop-shadow-lg">
-              Our Collection
-            </h1>
-            <p className="font-body text-ivory-200/80 text-base md:text-lg max-w-xl">
-              Discover the finest women&apos;s Indian fashion — sarees, churidars, and nightwear.
-            </p>
-          </div>
-
-          {/* Bottom: Search bar + Controls overlapping the hero */}
-          <div className="flex flex-col sm:flex-row gap-3 animate-[fadeSlideUp_1s_ease-out]">
-            <form onSubmit={handleSearch} className="flex-1 flex gap-2">
-              <div className="relative flex-1">
-                <input
-                  type="text"
-                  placeholder="Search our collection..."
-                  value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
-                  className="w-full px-5 py-3.5 pl-12 bg-white/95 backdrop-blur-sm border-0 rounded-xl font-body text-sm text-maroon-900 shadow-lg focus:outline-none focus:ring-2 focus:ring-gold-500/40 transition-all placeholder:text-gray-400"
-                />
-                <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-maroon-900/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                {searchInput && (
-                  <button
-                    type="button"
-                    onClick={() => { setSearchInput(''); setSearch(''); }}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                )}
-              </div>
-
-              {/* Filter Toggle */}
-              <button
-                type="button"
-                onClick={() => setFilterOpen((o) => !o)}
-                className={`relative flex items-center gap-2 px-5 py-3.5 rounded-xl font-body text-sm shadow-lg transition-all ${
-                  filterOpen
-                    ? 'bg-maroon-900 text-white'
-                    : 'bg-white/95 backdrop-blur-sm text-maroon-800 hover:bg-white'
-                }`}
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
-                </svg>
-                <span className="hidden sm:inline">Filters</span>
-                {activeFilterCount > 0 && (
-                  <span className={`absolute -top-1.5 -right-1.5 flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold ${
-                    filterOpen ? 'bg-gold-500 text-maroon-900' : 'bg-maroon-900 text-white'
-                  }`}>
-                    {activeFilterCount}
-                  </span>
-                )}
-              </button>
-            </form>
-
-            {/* Sort */}
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value)}
-              className="px-5 py-3.5 bg-white/95 backdrop-blur-sm border-0 rounded-xl font-body text-sm text-maroon-800 shadow-lg focus:outline-none focus:ring-2 focus:ring-gold-500/40 transition-all cursor-pointer"
-            >
-              {SORT_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-              ))}
-            </select>
-          </div>
+          <h1 className="font-display text-5xl md:text-7xl font-bold text-white mb-3">
+            Our Collection
+          </h1>
+          <p className="font-body text-ivory-200/80 text-base md:text-lg max-w-xl">
+            Discover the finest women&apos;s Indian fashion — sarees, churidars, and nightwear.
+          </p>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 pt-4 pb-8">
+      {/* Search & Controls Bar — below the hero */}
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="flex flex-col sm:flex-row gap-3 py-6">
+          <form onSubmit={handleSearch} className="flex-1 flex gap-3">
+            <div className="relative flex-1">
+              <input
+                type="text"
+                placeholder="Search our collection..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                className="w-full px-5 py-3 pl-12 bg-white border border-ivory-300 rounded-lg font-body text-sm text-maroon-900 focus:outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500/30 transition-all placeholder:text-gray-400"
+              />
+              <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              {searchInput && (
+                <button
+                  type="button"
+                  onClick={() => { setSearchInput(''); setSearch(''); }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
+            </div>
+
+            {/* Filter Toggle */}
+            <button
+              type="button"
+              onClick={() => setFilterOpen((o) => !o)}
+              className={`relative flex items-center gap-2 px-5 py-3 rounded-lg font-body text-sm transition-all ${
+                filterOpen
+                  ? 'bg-maroon-900 text-white'
+                  : 'bg-white border border-ivory-300 text-maroon-800 hover:border-maroon-300'
+              }`}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
+              </svg>
+              <span className="hidden sm:inline">Filters</span>
+              {activeFilterCount > 0 && (
+                <span className={`absolute -top-1.5 -right-1.5 flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold ${
+                  filterOpen ? 'bg-gold-500 text-maroon-900' : 'bg-maroon-900 text-white'
+                }`}>
+                  {activeFilterCount}
+                </span>
+              )}
+            </button>
+          </form>
+
+          {/* Sort */}
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value)}
+            className="px-4 py-3 bg-white border border-ivory-300 rounded-lg font-body text-sm text-maroon-800 focus:outline-none focus:border-gold-500 transition-all cursor-pointer"
+          >
+            {SORT_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
+        </div>
+
         {/* Filter Panel (collapsible) */}
         <FilterSidebar
           categories={CATEGORIES}
@@ -269,96 +263,84 @@ function ShopContent() {
           onClose={() => setFilterOpen(false)}
         />
 
-        {/* Active Filters + Product Count */}
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-          <div className="flex flex-wrap items-center gap-2">
-            <p className="font-body text-sm text-gray-500">
-              Showing <span className="font-semibold text-maroon-900">{products.length}</span> products
-            </p>
-            {(selectedCategory || search) && (
-              <>
-                <span className="text-ivory-400">|</span>
-                {selectedCategory && (
-                  <button
-                    onClick={() => setSelectedCategory('')}
-                    className="flex items-center gap-1 px-3 py-1 bg-maroon-900/10 text-maroon-900 rounded-full font-body text-xs hover:bg-maroon-900/20 transition-colors"
-                  >
-                    {selectedCategory}
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                )}
-                {search && (
-                  <button
-                    onClick={() => { setSearch(''); setSearchInput(''); }}
-                    className="flex items-center gap-1 px-3 py-1 bg-maroon-900/10 text-maroon-900 rounded-full font-body text-xs hover:bg-maroon-900/20 transition-colors"
-                  >
-                    &ldquo;{search}&rdquo;
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                )}
+        {/* Product Count + Active Filters */}
+        <div className="flex flex-wrap items-center gap-2 mb-6">
+          <p className="font-body text-sm text-gray-500">
+            Showing <span className="font-semibold text-maroon-900">{products.length}</span> products
+          </p>
+          {(selectedCategory || search) && (
+            <>
+              <span className="text-ivory-400">|</span>
+              {selectedCategory && (
                 <button
-                  onClick={handleReset}
-                  className="text-gold-600 font-body text-xs underline hover:text-gold-700"
+                  onClick={() => setSelectedCategory('')}
+                  className="flex items-center gap-1 px-3 py-1 bg-maroon-900/10 text-maroon-900 rounded-full font-body text-xs hover:bg-maroon-900/20 transition-colors"
                 >
-                  Clear all
+                  {selectedCategory}
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                 </button>
-              </>
-            )}
-          </div>
+              )}
+              {search && (
+                <button
+                  onClick={() => { setSearch(''); setSearchInput(''); }}
+                  className="flex items-center gap-1 px-3 py-1 bg-maroon-900/10 text-maroon-900 rounded-full font-body text-xs hover:bg-maroon-900/20 transition-colors"
+                >
+                  &ldquo;{search}&rdquo;
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
+              <button
+                onClick={handleReset}
+                className="text-gold-600 font-body text-xs underline hover:text-gold-700"
+              >
+                Clear all
+              </button>
+            </>
+          )}
         </div>
 
         {/* Products Grid */}
-        {loading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-            {[...Array(8)].map((_, i) => (
-              <div key={i} className="bg-white rounded-lg overflow-hidden animate-pulse">
-                <div className="aspect-[3/4] bg-ivory-300" />
-                <div className="p-4 space-y-3">
-                  <div className="h-3 bg-ivory-300 rounded w-2/3" />
-                  <div className="h-3 bg-ivory-300 rounded w-1/2" />
-                  <div className="h-5 bg-ivory-300 rounded w-1/3" />
+        <div className="pb-8">
+          {loading ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="bg-white rounded-lg overflow-hidden animate-pulse">
+                  <div className="aspect-[3/4] bg-ivory-300" />
+                  <div className="p-4 space-y-3">
+                    <div className="h-3 bg-ivory-300 rounded w-2/3" />
+                    <div className="h-3 bg-ivory-300 rounded w-1/2" />
+                    <div className="h-5 bg-ivory-300 rounded w-1/3" />
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        ) : products.length === 0 ? (
-          <div className="text-center py-20">
-            <svg className="w-20 h-20 text-ivory-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <h3 className="font-display text-2xl text-maroon-900 mb-2">No products found</h3>
-            <p className="font-body text-gray-500 mb-6">Try adjusting your filters or search term.</p>
-            <button
-              onClick={handleReset}
-              className="px-6 py-2.5 bg-maroon-900 text-white font-body text-sm rounded-lg hover:bg-maroon-800 transition-colors"
-            >
-              Reset Filters
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          ) : products.length === 0 ? (
+            <div className="text-center py-20">
+              <svg className="w-20 h-20 text-ivory-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <h3 className="font-display text-2xl text-maroon-900 mb-2">No products found</h3>
+              <p className="font-body text-gray-500 mb-6">Try adjusting your filters or search term.</p>
+              <button
+                onClick={handleReset}
+                className="px-6 py-2.5 bg-maroon-900 text-white font-body text-sm rounded-lg hover:bg-maroon-800 transition-colors"
+              >
+                Reset Filters
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+              {products.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-
-      {/* Animations */}
-      <style jsx global>{`
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes fadeSlideUp {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
     </div>
   );
 }
