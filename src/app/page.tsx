@@ -22,7 +22,7 @@ const FEATURED_CATEGORIES = [
   {
     name: 'Nighty',
     desc: 'Comfort meets elegance',
-    image: 'https://images.pexels.com/photos/8640026/pexels-photo-8640026.jpeg?auto=compress&cs=tinysrgb&w=800',
+    image: '/nighty-backdrop.jpeg',
   },
 ];
 
