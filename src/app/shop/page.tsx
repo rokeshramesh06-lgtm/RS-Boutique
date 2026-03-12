@@ -11,10 +11,10 @@ import FilterSidebar from '@/components/FilterSidebar';
 const CATEGORIES = ['Sarees', 'Churidar', 'Nighty'];
 
 const CATEGORY_BACKGROUNDS: Record<string, string> = {
-  '': '/saree-backdrop.jpeg',
-  'Sarees': '/saree-backdrop.jpeg',
-  'Churidar': '/churidar-backdrop.jpeg',
-  'Nighty': '/nighty-backdrop.jpeg',
+  '': '/saree-hero.jpeg',
+  'Sarees': '/saree-hero.jpeg',
+  'Churidar': '/churidar-hero.jpeg',
+  'Nighty': '/nighty-hero.jpeg',
 };
 
 const SORT_OPTIONS = [
@@ -61,7 +61,7 @@ function ShopContent() {
         return () => clearTimeout(timer);
       }
     } else {
-      const allBgs = ['/saree-backdrop.jpeg', '/churidar-backdrop.jpeg', '/nighty-backdrop.jpeg'];
+      const allBgs = ['/saree-hero.jpeg', '/churidar-hero.jpeg', '/nighty-hero.jpeg'];
       cycleIndex.current = 0;
       setCurrentBg(allBgs[0]);
 
@@ -145,7 +145,7 @@ function ShopContent() {
           fill
           priority
           sizes="100vw"
-          className="object-cover object-top"
+          className="object-cover"
         />
 
         {/* Next background (crossfade) */}
@@ -155,7 +155,7 @@ function ShopContent() {
             alt=""
             fill
             sizes="100vw"
-            className={`object-cover object-top transition-opacity duration-700 ease-in-out ${
+            className={`object-cover transition-opacity duration-700 ease-in-out ${
               transitioning ? 'opacity-100' : 'opacity-0'
             }`}
           />
