@@ -11,8 +11,12 @@ import {
 import { User } from '@/types';
 import { createClient } from '@/lib/supabase/client';
 
-// Single client instance at module scope — prevents phantom clients on every render
-const supabase = createClient();
+// Lazy singleton — avoids module-scope creation during SSR where browser storage is unavailable
+let _supabase: ReturnType<typeof createClient> | null = null;
+function getSupabase() {
+  if (!_supabase) _supabase = createClient();
+  return _supabase;
+}
 
 interface AuthContextType {
   user: User | null;
@@ -25,6 +29,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 async function fetchProfile(userId: string, fallbackEmail?: string, fallbackName?: string): Promise<User> {
+  const supabase = getSupabase();
   try {
     const { data, error } = await supabase
       .from('profiles')
@@ -70,6 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const init = async () => {
       try {
+        const supabase = getSupabase();
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user) {
           const profile = await fetchProfile(
@@ -88,7 +94,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     init();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    const { data: { subscription } } = getSupabase().auth.onAuthStateChange(
       async (event, session) => {
         // Skip if login/signup already set the user directly
         if (handledByAction.current) {
@@ -121,7 +127,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string) => {
     const doLogin = async () => {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await getSupabase().auth.signInWithPassword({
         email,
         password,
       });
@@ -146,7 +152,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signup = async (name: string, email: string, password: string) => {
     const doSignup = async () => {
-      const { data, error } = await supabase.auth.signUp({
+      const { data, error } = await getSupabase().auth.signUp({
         email,
         password,
         options: {
@@ -173,7 +179,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
-    const { error } = await supabase.auth.signOut();
+    const { error } = await getSupabase().auth.signOut();
     if (error) {
       throw new Error(error.message);
     }
