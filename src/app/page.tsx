@@ -17,7 +17,7 @@ const FEATURED_CATEGORIES = [
   {
     name: 'Churidar',
     desc: 'Graceful ethnic charm',
-    image: 'https://images.pexels.com/photos/1149962/pexels-photo-1149962.jpeg?auto=compress&cs=tinysrgb&w=800',
+    image: '/churidar-backdrop.jpeg',
   },
   {
     name: 'Nighty',
