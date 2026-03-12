@@ -136,8 +136,8 @@ export default function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteJsonLd) }}
       />
-      {/* Hero Section */}
-      <section className="relative h-[90vh] flex items-center justify-center overflow-hidden">
+      {/* Hero Section — pull up behind the transparent navbar */}
+      <section className="relative h-[90vh] flex items-center justify-center overflow-hidden -mt-[70px]">
         {/* Background image */}
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"

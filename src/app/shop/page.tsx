@@ -136,8 +136,8 @@ function ShopContent() {
 
   return (
     <div className="min-h-screen bg-ivory-100">
-      {/* Hero Header */}
-      <div className="relative h-[55vh] min-h-[400px] max-h-[560px] overflow-hidden">
+      {/* Hero Header — pull up behind the transparent navbar */}
+      <div className="relative h-[55vh] min-h-[400px] max-h-[560px] overflow-hidden -mt-[70px]">
         {/* Current background */}
         <Image
           src={currentBg}
@@ -165,7 +165,7 @@ function ShopContent() {
         <div className="absolute inset-0 bg-black/40" />
 
         {/* Content — breadcrumb, title, subtitle only */}
-        <div className="relative h-full flex flex-col justify-center max-w-7xl mx-auto px-4">
+        <div className="relative h-full flex flex-col justify-center max-w-7xl mx-auto px-4 pt-[70px]">
           {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-ivory-200/70 font-body text-sm mb-6">
             <Link href="/" className="hover:text-gold-400 transition-colors">Home</Link>
