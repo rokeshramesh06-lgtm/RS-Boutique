@@ -18,7 +18,6 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedSize, setSelectedSize] = useState('');
-  const [selectedColor, setSelectedColor] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [addedToCart, setAddedToCart] = useState(false);
   const [openSection, setOpenSection] = useState<string | null>('details');
@@ -34,17 +33,16 @@ export default function ProductDetailPage() {
       .then((data) => {
         setProduct(data.product);
         const sizes = Array.isArray(data.product.sizes) ? data.product.sizes : [];
-        const colors = Array.isArray(data.product.colors) ? data.product.colors : [];
         if (sizes?.length) setSelectedSize(sizes[0]);
-        if (colors?.length) setSelectedColor(colors[0]);
       })
       .catch(() => setError('Product not found'))
       .finally(() => setLoading(false));
   }, [params.id]);
 
   const handleAddToCart = () => {
-    if (!product || !selectedSize || !selectedColor) return;
-    addToCart(product, selectedSize, selectedColor, quantity);
+    if (!product || !selectedSize) return;
+    const colors = Array.isArray(product.colors) ? product.colors : [];
+    addToCart(product, selectedSize, colors[0] || 'Default', quantity);
     setAddedToCart(true);
     setTimeout(() => setAddedToCart(false), 3000);
   };
@@ -52,20 +50,6 @@ export default function ProductDetailPage() {
   const sizes = Array.isArray(product?.sizes) ? product.sizes : [];
   const colors = Array.isArray(product?.colors) ? product.colors : [];
   const discount = product ? Math.round(((product.original_price - product.price) / product.original_price) * 100) : 0;
-
-  const COLOR_MAP: Record<string, string> = {
-    Red: '#DC2626', Maroon: '#6B0F1A', Gold: '#C9A84C', Green: '#16A34A',
-    Blue: '#2563EB', Navy: '#1E3A5F', Pink: '#EC4899', Orange: '#EA580C',
-    Purple: '#9333EA', White: '#FFFFFF', Black: '#1A1A1A', Cream: '#FFFDD0',
-    Beige: '#F5F5DC', Yellow: '#EAB308', Teal: '#0D9488', Silver: '#C0C0C0',
-    Peach: '#FFDAB9', Magenta: '#FF00FF', Turquoise: '#40E0D0', Ivory: '#FFFFF0',
-    Rust: '#B7410E', Wine: '#722F37', Royal: '#4169E1', Emerald: '#50C878',
-  };
-
-  const getColorHex = (colorName: string) => {
-    const key = Object.keys(COLOR_MAP).find((k) => colorName.toLowerCase().includes(k.toLowerCase()));
-    return key ? COLOR_MAP[key] : '#888888';
-  };
 
   if (loading) {
     return (
@@ -237,34 +221,11 @@ export default function ProductDetailPage() {
               </div>
             )}
 
-            {/* Color Selector */}
+            {/* Color Info */}
             {colors.length > 0 && (
               <div className="mb-6">
-                <label className="font-body text-sm font-semibold text-maroon-900 mb-3 block">
-                  Color: <span className="font-normal text-gray-500">{selectedColor}</span>
-                </label>
-                <div className="flex flex-wrap gap-3">
-                  {colors.map((color) => (
-                    <button
-                      key={color}
-                      onClick={() => setSelectedColor(color)}
-                      className={`relative w-10 h-10 rounded-full transition-all duration-200 ${
-                        selectedColor === color ? 'ring-2 ring-offset-2 ring-gold-500' : 'hover:scale-110'
-                      }`}
-                      style={{ backgroundColor: getColorHex(color) }}
-                      title={color}
-                    >
-                      {selectedColor === color && (
-                        <svg className="absolute inset-0 m-auto w-4 h-4 text-white drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                        </svg>
-                      )}
-                      {getColorHex(color) === '#FFFFFF' || getColorHex(color) === '#FFFDD0' || getColorHex(color) === '#F5F5DC' || getColorHex(color) === '#FFFFF0' ? (
-                        <span className={`absolute inset-0 rounded-full border border-gray-300 ${selectedColor === color ? '' : ''}`} />
-                      ) : null}
-                    </button>
-                  ))}
-                </div>
+                <label className="font-body text-sm font-semibold text-maroon-900 mb-1 block">Color</label>
+                <p className="font-body text-sm text-gray-600">{colors.join(', ')}</p>
               </div>
             )}
 
@@ -291,7 +252,7 @@ export default function ProductDetailPage() {
             {/* Add to Cart Button */}
             <button
               onClick={handleAddToCart}
-              disabled={!selectedSize || !selectedColor}
+              disabled={!selectedSize}
               className={`w-full py-4 rounded-lg font-body font-semibold text-base tracking-wide uppercase transition-all duration-300 ${
                 addedToCart
                   ? 'bg-green-600 text-white'

@@ -43,6 +43,15 @@ interface ProductForm {
   featured: boolean;
 }
 
+interface BulkItem {
+  id: string;
+  file: File;
+  preview: string;
+  status: 'queued' | 'uploading' | 'analyzing' | 'creating' | 'done' | 'error';
+  productName?: string;
+  error?: string;
+}
+
 interface CouponForm {
   code: string;
   discount_percent: string;
@@ -90,6 +99,12 @@ export default function AdminPage() {
   const [generatingCover, setGeneratingCover] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Bulk upload
+  const [showBulkUpload, setShowBulkUpload] = useState(false);
+  const [bulkItems, setBulkItems] = useState<BulkItem[]>([]);
+  const [bulkProcessing, setBulkProcessing] = useState(false);
+  const bulkInputRef = useRef<HTMLInputElement>(null);
 
   // Coupon form
   const [showCouponForm, setShowCouponForm] = useState(false);
@@ -367,6 +382,117 @@ export default function AdminPage() {
     }
   };
 
+  // Bulk upload handlers
+  const handleBulkFiles = (files: FileList | File[]) => {
+    const imageFiles = Array.from(files)
+      .filter((f) => f.type.startsWith('image/'))
+      .slice(0, 100);
+
+    if (imageFiles.length === 0) return;
+
+    const newItems: BulkItem[] = imageFiles.map((file) => ({
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+      file,
+      preview: URL.createObjectURL(file),
+      status: 'queued' as const,
+    }));
+
+    setBulkItems((prev) => [...prev, ...newItems].slice(0, 100));
+    if (!showBulkUpload) setShowBulkUpload(true);
+  };
+
+  const removeBulkItem = (id: string) => {
+    setBulkItems((prev) => {
+      const item = prev.find((i) => i.id === id);
+      if (item) URL.revokeObjectURL(item.preview);
+      return prev.filter((i) => i.id !== id);
+    });
+  };
+
+  const processBulkItem = async (item: BulkItem): Promise<void> => {
+    const updateItem = (updates: Partial<BulkItem>) => {
+      setBulkItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, ...updates } : i)));
+    };
+
+    try {
+      // Step 1: Upload image
+      updateItem({ status: 'uploading' });
+      const fd = new FormData();
+      fd.append('image', item.file);
+      const uploadRes = await fetch('/api/admin/upload', { method: 'POST', body: fd });
+      const uploadData = await uploadRes.json();
+      if (!uploadRes.ok) throw new Error(uploadData.error || 'Upload failed');
+
+      const imageUrl = uploadData.url;
+
+      // Step 2: Get base64 & analyze
+      updateItem({ status: 'analyzing' });
+      const base64 = await fileToBase64(item.file);
+      const analyzeRes = await fetch('/api/admin/analyze-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image_base64: base64 }),
+      });
+      const analyzeData = await analyzeRes.json();
+      if (!analyzeRes.ok) throw new Error(analyzeData.error || 'Analysis failed');
+
+      updateItem({ productName: analyzeData.name || item.file.name });
+
+      // Step 3: Create product
+      updateItem({ status: 'creating' });
+      const productBody = {
+        name: analyzeData.name || item.file.name.replace(/\.[^.]+$/, ''),
+        description: analyzeData.description || '',
+        price: analyzeData.price || 999,
+        original_price: analyzeData.original_price || analyzeData.price || 1299,
+        category: analyzeData.category || 'Sarees',
+        gender: 'Women',
+        sizes: analyzeData.sizes || ['Free Size'],
+        colors: analyzeData.colors ? analyzeData.colors.split(',').map((c: string) => c.trim()).filter(Boolean) : [],
+        image_url: imageUrl,
+        image_gradient: '#8B1A1A to #C9A84C',
+        in_stock: true,
+        featured: false,
+      };
+
+      const createRes = await fetch('/api/admin/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(productBody),
+      });
+      if (!createRes.ok) {
+        const err = await createRes.json();
+        throw new Error(err.error || 'Failed to create product');
+      }
+
+      updateItem({ status: 'done' });
+    } catch (err: unknown) {
+      updateItem({ status: 'error', error: err instanceof Error ? err.message : 'Unknown error' });
+    }
+  };
+
+  const startBulkProcessing = async () => {
+    setBulkProcessing(true);
+    const queued = bulkItems.filter((i) => i.status === 'queued' || i.status === 'error');
+
+    // Process 3 at a time for speed
+    const concurrency = 3;
+    for (let i = 0; i < queued.length; i += concurrency) {
+      const batch = queued.slice(i, i + concurrency);
+      await Promise.all(batch.map(processBulkItem));
+    }
+
+    setBulkProcessing(false);
+    fetchData();
+  };
+
+  const closeBulkUpload = () => {
+    if (bulkProcessing) return;
+    bulkItems.forEach((i) => URL.revokeObjectURL(i.preview));
+    setBulkItems([]);
+    setShowBulkUpload(false);
+  };
+
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setDragOver(false);
@@ -558,20 +684,31 @@ export default function AdminPage() {
               <div>
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="font-display text-2xl font-bold text-maroon-900">Products ({products.length})</h2>
-                  <button
-                    onClick={() => {
-                      setProductForm(emptyProductForm);
-                      setEditingProduct(null);
-                      setShowProductForm(true);
-                      setProductError('');
-                    }}
-                    className="px-5 py-2.5 bg-maroon-900 text-white font-body text-sm font-semibold rounded-lg hover:bg-maroon-800 transition-colors flex items-center gap-2"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
-                    Add Product
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => setShowBulkUpload(true)}
+                      className="px-5 py-2.5 bg-gradient-to-r from-amber-600 to-amber-500 text-white font-body text-sm font-semibold rounded-lg hover:from-amber-700 hover:to-amber-600 transition-all shadow-sm hover:shadow-md flex items-center gap-2"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      Bulk Upload
+                    </button>
+                    <button
+                      onClick={() => {
+                        setProductForm(emptyProductForm);
+                        setEditingProduct(null);
+                        setShowProductForm(true);
+                        setProductError('');
+                      }}
+                      className="px-5 py-2.5 bg-maroon-900 text-white font-body text-sm font-semibold rounded-lg hover:bg-maroon-800 transition-colors flex items-center gap-2"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                      Add Product
+                    </button>
+                  </div>
                 </div>
 
                 {/* Product Form Modal */}
@@ -857,6 +994,240 @@ export default function AdminPage() {
                           </button>
                         </div>
                       </form>
+                    </div>
+                  </div>
+                )}
+
+                {/* Bulk Upload Modal */}
+                {showBulkUpload && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                    <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl">
+                      {/* Header */}
+                      <div className="flex items-center justify-between px-6 py-5 border-b border-ivory-200">
+                        <div>
+                          <h3 className="font-display text-2xl font-bold text-maroon-900">Bulk Upload</h3>
+                          <p className="font-body text-sm text-gray-500 mt-0.5">
+                            Upload up to 100 images — AI auto-creates each product
+                          </p>
+                        </div>
+                        <button
+                          onClick={closeBulkUpload}
+                          disabled={bulkProcessing}
+                          className="text-gray-400 hover:text-gray-600 disabled:opacity-30 transition-colors"
+                        >
+                          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+
+                      {/* Drop zone */}
+                      {!bulkProcessing && (
+                        <div className="px-6 pt-5">
+                          <div
+                            onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('border-amber-500', 'bg-amber-50/50'); }}
+                            onDragLeave={(e) => { e.currentTarget.classList.remove('border-amber-500', 'bg-amber-50/50'); }}
+                            onDrop={(e) => {
+                              e.preventDefault();
+                              e.currentTarget.classList.remove('border-amber-500', 'bg-amber-50/50');
+                              handleBulkFiles(e.dataTransfer.files);
+                            }}
+                            onClick={() => bulkInputRef.current?.click()}
+                            className="border-2 border-dashed border-ivory-300 rounded-xl p-8 text-center cursor-pointer hover:border-amber-400 hover:bg-amber-50/30 transition-all"
+                          >
+                            <input
+                              ref={bulkInputRef}
+                              type="file"
+                              accept="image/jpeg,image/png,image/webp"
+                              multiple
+                              onChange={(e) => {
+                                if (e.target.files) handleBulkFiles(e.target.files);
+                                e.target.value = '';
+                              }}
+                              className="hidden"
+                            />
+                            <div className="flex flex-col items-center gap-3">
+                              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-100 to-amber-50 flex items-center justify-center">
+                                <svg className="w-7 h-7 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                </svg>
+                              </div>
+                              <div>
+                                <p className="font-body text-sm font-semibold text-maroon-900">
+                                  Drop images here or <span className="text-amber-600 underline">browse files</span>
+                                </p>
+                                <p className="font-body text-xs text-gray-400 mt-1">
+                                  JPEG, PNG, WebP — up to 100 images at once
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Progress bar */}
+                      {bulkItems.length > 0 && (
+                        <div className="px-6 pt-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="font-body text-xs font-semibold text-gray-600">
+                              {bulkItems.filter((i) => i.status === 'done').length} / {bulkItems.length} completed
+                            </span>
+                            {bulkItems.some((i) => i.status === 'error') && (
+                              <span className="font-body text-xs font-semibold text-red-500">
+                                {bulkItems.filter((i) => i.status === 'error').length} failed
+                              </span>
+                            )}
+                          </div>
+                          <div className="h-2 bg-ivory-200 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-gradient-to-r from-amber-500 to-amber-400 rounded-full transition-all duration-500 ease-out"
+                              style={{ width: `${(bulkItems.filter((i) => i.status === 'done').length / bulkItems.length) * 100}%` }}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Image grid */}
+                      <div className="flex-1 overflow-y-auto px-6 py-4 min-h-0">
+                        {bulkItems.length === 0 ? (
+                          <div className="text-center py-8">
+                            <p className="font-body text-sm text-gray-400">No images added yet</p>
+                          </div>
+                        ) : (
+                          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
+                            {bulkItems.map((item) => (
+                              <div
+                                key={item.id}
+                                className={`relative group rounded-xl overflow-hidden border-2 transition-all ${
+                                  item.status === 'done'
+                                    ? 'border-green-300 bg-green-50/30'
+                                    : item.status === 'error'
+                                    ? 'border-red-300 bg-red-50/30'
+                                    : item.status === 'queued'
+                                    ? 'border-ivory-200 bg-white'
+                                    : 'border-amber-300 bg-amber-50/30'
+                                }`}
+                              >
+                                <div className="aspect-square relative">
+                                  <Image
+                                    src={item.preview}
+                                    alt={item.file.name}
+                                    fill
+                                    className="object-cover"
+                                    sizes="120px"
+                                  />
+
+                                  {/* Status overlay */}
+                                  {item.status !== 'queued' && item.status !== 'done' && item.status !== 'error' && (
+                                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center backdrop-blur-[1px]">
+                                      <div className="flex flex-col items-center gap-1.5">
+                                        <div className="w-6 h-6 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                                        <span className="font-body text-[10px] font-semibold text-white capitalize">
+                                          {item.status === 'uploading' ? 'Uploading' : item.status === 'analyzing' ? 'AI Analyzing' : 'Creating'}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* Done overlay */}
+                                  {item.status === 'done' && (
+                                    <div className="absolute inset-0 bg-green-900/30 flex items-center justify-center">
+                                      <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center shadow-lg">
+                                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* Error overlay */}
+                                  {item.status === 'error' && (
+                                    <div className="absolute inset-0 bg-red-900/30 flex items-center justify-center">
+                                      <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center shadow-lg">
+                                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* Remove button (only when queued) */}
+                                  {item.status === 'queued' && !bulkProcessing && (
+                                    <button
+                                      onClick={() => removeBulkItem(item.id)}
+                                      className="absolute top-1 right-1 w-5 h-5 bg-black/60 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
+                                    >
+                                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                      </svg>
+                                    </button>
+                                  )}
+                                </div>
+
+                                {/* Name / status text */}
+                                <div className="px-2 py-1.5">
+                                  <p className="font-body text-[10px] text-gray-600 truncate leading-tight">
+                                    {item.productName || item.file.name}
+                                  </p>
+                                  {item.error && (
+                                    <p className="font-body text-[9px] text-red-500 truncate" title={item.error}>
+                                      {item.error}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Footer actions */}
+                      <div className="px-6 py-4 border-t border-ivory-200 flex items-center justify-between">
+                        <div className="font-body text-sm text-gray-500">
+                          {bulkItems.length} image{bulkItems.length !== 1 ? 's' : ''} selected
+                          {bulkItems.length >= 100 && <span className="text-amber-600 font-semibold ml-1">(max reached)</span>}
+                        </div>
+                        <div className="flex items-center gap-3">
+                          {!bulkProcessing && bulkItems.length > 0 && bulkItems.some((i) => i.status !== 'done') && (
+                            <button
+                              onClick={() => {
+                                bulkItems.forEach((i) => URL.revokeObjectURL(i.preview));
+                                setBulkItems([]);
+                              }}
+                              className="px-4 py-2.5 border border-ivory-300 text-gray-600 font-body text-sm rounded-lg hover:bg-ivory-100 transition-colors"
+                            >
+                              Clear All
+                            </button>
+                          )}
+                          {bulkProcessing ? (
+                            <div className="flex items-center gap-2 px-5 py-2.5 bg-amber-100 text-amber-800 font-body text-sm font-semibold rounded-lg">
+                              <div className="w-4 h-4 border-2 border-amber-300 border-t-amber-700 rounded-full animate-spin" />
+                              Processing...
+                            </div>
+                          ) : bulkItems.some((i) => i.status === 'queued' || i.status === 'error') ? (
+                            <button
+                              onClick={startBulkProcessing}
+                              disabled={bulkItems.filter((i) => i.status === 'queued' || i.status === 'error').length === 0}
+                              className="px-6 py-2.5 bg-gradient-to-r from-amber-600 to-amber-500 text-white font-body text-sm font-semibold rounded-lg hover:from-amber-700 hover:to-amber-600 transition-all shadow-sm hover:shadow-md disabled:opacity-50 flex items-center gap-2"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                              </svg>
+                              Start Processing ({bulkItems.filter((i) => i.status === 'queued' || i.status === 'error').length})
+                            </button>
+                          ) : (
+                            <button
+                              onClick={closeBulkUpload}
+                              className="px-6 py-2.5 bg-green-600 text-white font-body text-sm font-semibold rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                              Done
+                            </button>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}

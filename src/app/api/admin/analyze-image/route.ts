@@ -62,6 +62,7 @@ export async function POST(request: NextRequest) {
 - "original_price": The MRP/original price (slightly higher than price to show discount).
 - "category": One of: ${CATEGORIES.map(c => `"${c}"`).join(', ')}. Determine based on the garment type.
 - "colors": Comma-separated list of visible colors (e.g., "Red, Gold, Maroon").
+- "sizes": An array of available sizes. For Sarees, ALWAYS use ["Free Size"]. For other categories (Churidar, Nighty), use standard sizes like ["S", "M", "L", "XL", "XXL"] based on what's typical for that garment type.
 
 IMPORTANT: Return ONLY valid JSON, no markdown, no code blocks, no explanation.`,
               },
@@ -99,9 +100,11 @@ IMPORTANT: Return ONLY valid JSON, no markdown, no code blocks, no explanation.`
       result.category = 'Sarees'; // default fallback
     }
 
-    // Sarees are always Free Size
+    // Sarees are always Free Size, other categories get standard sizes if not provided
     if (result.category === 'Sarees') {
       result.sizes = ['Free Size'];
+    } else if (!result.sizes || result.sizes.length === 0) {
+      result.sizes = ['S', 'M', 'L', 'XL', 'XXL'];
     }
 
     return NextResponse.json(result);
