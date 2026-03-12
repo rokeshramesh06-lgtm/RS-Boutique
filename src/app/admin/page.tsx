@@ -409,7 +409,8 @@ export default function AdminPage() {
     });
   };
 
-  const processBulkItem = async (item: BulkItem): Promise<void> => {
+  // Phase 1: Upload, analyze, create product (no cover yet)
+  const processBulkItem = async (item: BulkItem): Promise<{ id: string; productId: number; base64: string; name: string; category: string } | null> => {
     const updateItem = (updates: Partial<BulkItem>) => {
       setBulkItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, ...updates } : i)));
     };
@@ -436,16 +437,18 @@ export default function AdminPage() {
       const analyzeData = await analyzeRes.json();
       if (!analyzeRes.ok) throw new Error(analyzeData.error || 'Analysis failed');
 
-      updateItem({ productName: analyzeData.name || item.file.name });
+      const productName = analyzeData.name || item.file.name.replace(/\.[^.]+$/, '');
+      const category = analyzeData.category || 'Sarees';
+      updateItem({ productName });
 
       // Step 3: Create product
       updateItem({ status: 'creating' });
       const productBody = {
-        name: analyzeData.name || item.file.name.replace(/\.[^.]+$/, ''),
+        name: productName,
         description: analyzeData.description || '',
         price: analyzeData.price || 999,
         original_price: analyzeData.original_price || analyzeData.price || 1299,
-        category: analyzeData.category || 'Sarees',
+        category,
         gender: 'Women',
         sizes: analyzeData.sizes || ['Free Size'],
         colors: analyzeData.colors ? analyzeData.colors.split(',').map((c: string) => c.trim()).filter(Boolean) : [],
@@ -466,35 +469,12 @@ export default function AdminPage() {
       }
       const createData = await createRes.json();
 
-      // Step 4: Generate cover image with model wearing the garment
+      // Mark as generating — cover will be done in phase 2
       updateItem({ status: 'generating' });
-      try {
-        const coverRes = await fetch('/api/admin/generate-cover', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            image_base64: base64,
-            product_name: productBody.name,
-            category: productBody.category,
-          }),
-        });
-        const coverData = await coverRes.json();
-        if (coverRes.ok && coverData.url) {
-          // Update the product's image_url with the generated cover
-          await fetch(`/api/admin/products/${createData.product.id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ image_url: coverData.url }),
-          });
-        }
-      } catch {
-        // Non-blocking — keeps the original uploaded image
-        console.error('Cover generation failed for', productBody.name);
-      }
-
-      updateItem({ status: 'done' });
+      return { id: item.id, productId: createData.product.id, base64, name: productName, category };
     } catch (err: unknown) {
       updateItem({ status: 'error', error: err instanceof Error ? err.message : 'Unknown error' });
+      return null;
     }
   };
 
@@ -502,8 +482,43 @@ export default function AdminPage() {
     setBulkProcessing(true);
     const queued = bulkItems.filter((i) => i.status === 'queued' || i.status === 'error');
 
-    // Process all in parallel — no rate limits
-    await Promise.all(queued.map(processBulkItem));
+    // Phase 1: Create all products in parallel (upload → analyze → create)
+    const results = await Promise.all(queued.map(processBulkItem));
+    const needCovers = results.filter((r): r is NonNullable<typeof r> => r !== null);
+
+    // Phase 2: Generate covers 2 at a time to avoid Vercel function timeouts
+    const updateItem = (itemId: string, updates: Partial<BulkItem>) => {
+      setBulkItems((prev) => prev.map((i) => (i.id === itemId ? { ...i, ...updates } : i)));
+    };
+
+    const coverConcurrency = 2;
+    for (let i = 0; i < needCovers.length; i += coverConcurrency) {
+      const batch = needCovers.slice(i, i + coverConcurrency);
+      await Promise.all(batch.map(async (item) => {
+        try {
+          const coverRes = await fetch('/api/admin/generate-cover', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              image_base64: item.base64,
+              product_name: item.name,
+              category: item.category,
+            }),
+          });
+          const coverData = await coverRes.json();
+          if (coverRes.ok && coverData.url) {
+            await fetch(`/api/admin/products/${item.productId}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ image_url: coverData.url }),
+            });
+          }
+        } catch {
+          console.error('Cover generation failed for', item.name);
+        }
+        updateItem(item.id, { status: 'done' });
+      }));
+    }
 
     setBulkProcessing(false);
     fetchData();
