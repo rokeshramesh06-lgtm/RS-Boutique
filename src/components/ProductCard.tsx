@@ -52,6 +52,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               alt={product.name}
               fill
               sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              quality={75}
               className="object-cover transition-transform duration-700 group-hover:scale-110"
             />
           ) : (
