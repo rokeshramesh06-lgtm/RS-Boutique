@@ -82,14 +82,18 @@ export default function Navbar() {
     return pathname.startsWith(href);
   };
 
+  const isHeroPage = pathname === '/' || pathname === '/shop';
+
   return (
     <>
       <nav
         className={`fixed top-0 left-0 right-0 z-50 h-[70px] transition-all duration-300 ${
           scrolled
-            ? 'bg-maroon-900 shadow-lg shadow-maroon-950/20'
-            : 'bg-maroon-900'
-        } border-b border-maroon-800/50`}
+            ? 'bg-maroon-900 shadow-lg shadow-maroon-950/20 border-b border-maroon-800/50'
+            : isHeroPage
+              ? 'bg-transparent border-b border-transparent'
+              : 'bg-maroon-900 border-b border-maroon-800/50'
+        }`}
       >
         <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           {/* Logo */}
