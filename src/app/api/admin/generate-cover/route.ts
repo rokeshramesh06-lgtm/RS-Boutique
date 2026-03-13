@@ -38,6 +38,25 @@ export async function POST(request: NextRequest) {
     const garmentType = category || 'saree';
     const fabricDesc = material ? `${material} ${garmentType}` : garmentType;
 
+    const backgrounds = [
+      'a grand haveli courtyard with intricately carved sandstone pillars and arched doorways, warm terracotta tones',
+      'a Rajasthani palace corridor with ornate jharokha windows and colorful stained glass, golden sunlight streaming in',
+      'a lush Mughal garden with fountains, manicured hedges, and blooming jasmine and marigold flowers',
+      'a temple courtyard with brass oil lamps (diyas), carved stone pillars, and a lotus pond in the background',
+      'an elegant marble palace balcony overlooking a serene lake at golden hour, with carved marble railings',
+      'a traditional South Indian temple corridor with painted pillars, brass lamps, and kolam patterns on the floor',
+      'a vibrant Jaipur street with pink sandstone walls, colorful bandhani fabric canopy overhead, and brass lanterns',
+      'a Kerala backwater scene with wooden houseboat details, coconut palms, and warm tropical light',
+      'an Udaipur-style white marble courtyard with peacock motifs, reflecting pool, and bougainvillea creeping on walls',
+      'a Varanasi ghat at dawn with ancient stone steps, brass bells, and soft morning mist over the river',
+      'a Shekhawati haveli with elaborate fresco-painted walls in indigo and gold, ornate wooden doors',
+      'a Chettinad mansion courtyard with black-and-white checkered marble floor, teak pillars, and antique brass uruli',
+      'a Mysore palace-inspired hall with stained glass ceiling, polished mosaic floor, and gold-leafed archways',
+      'a Jodhpur blue city rooftop terrace with whitewashed walls, hand-painted blue ceramics, and Mehrangarh Fort in the distance',
+      'a traditional Indian wedding mandap setting with fresh marigold garlands, red drapes, and ornate gold kalash',
+    ];
+    const bg = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+
     const prompt = `Generate an e-commerce product photo of exactly ONE Indian woman model wearing this ${fabricDesc}.
 
 STRICT RULES:
@@ -58,7 +77,7 @@ ${material ? `- CRITICAL FABRIC ACCURACY: This is a ${material} garment. The fab
   material.toLowerCase().includes('organza') ? 'Organza is sheer, stiff, and crisp with a slight shimmer.' :
   `Ensure the fabric texture and drape accurately represents ${material}.`
 } Do NOT make it look like a different fabric.` : '- The fabric texture, sheen, and drape must match the input image exactly — do not add shine to matte fabrics or flatten shiny ones.'}
-- BACKGROUND: A beautiful traditional Indian setting — such as a haveli courtyard with carved pillars, a palace corridor with arched doorways, a temple garden with marigold flowers, a courtyard with rangoli or diyas, or an ornate jharokha balcony. The background should feel authentically Indian, warm, and elegant. Do NOT use plain studio backgrounds.
+- BACKGROUND: Set the scene in ${bg}. The background must feel authentically Indian, warm, and elegant. Do NOT use plain studio backgrounds.
 - Natural warm lighting that complements the traditional setting — golden hour sunlight, soft ambient light through jali screens, or warm lantern glow
 - The model must be CENTERED in the frame with equal space on both sides
 - Full body shot from head to toe, model standing upright facing the camera
