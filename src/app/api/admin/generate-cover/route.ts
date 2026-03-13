@@ -58,8 +58,8 @@ ${material ? `- CRITICAL FABRIC ACCURACY: This is a ${material} garment. The fab
   material.toLowerCase().includes('organza') ? 'Organza is sheer, stiff, and crisp with a slight shimmer.' :
   `Ensure the fabric texture and drape accurately represents ${material}.`
 } Do NOT make it look like a different fabric.` : '- The fabric texture, sheen, and drape must match the input image exactly — do not add shine to matte fabrics or flatten shiny ones.'}
-- Clean solid or soft gradient studio background (white, cream, or light gray)
-- Professional studio lighting, soft and even
+- BACKGROUND: A beautiful traditional Indian setting — such as a haveli courtyard with carved pillars, a palace corridor with arched doorways, a temple garden with marigold flowers, a courtyard with rangoli or diyas, or an ornate jharokha balcony. The background should feel authentically Indian, warm, and elegant. Do NOT use plain studio backgrounds.
+- Natural warm lighting that complements the traditional setting — golden hour sunlight, soft ambient light through jali screens, or warm lantern glow
 - The model must be CENTERED in the frame with equal space on both sides
 - Full body shot from head to toe, model standing upright facing the camera
 - The model should be vertically centered too — not cropped at top or bottom
