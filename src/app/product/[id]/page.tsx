@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -21,6 +21,23 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1);
   const [addedToCart, setAddedToCart] = useState(false);
   const [openSection, setOpenSection] = useState<string | null>('details');
+
+  // Hover zoom state
+  const [isZooming, setIsZooming] = useState(false);
+  const [zoomPos, setZoomPos] = useState({ x: 0, y: 0 });
+  const [bgPos, setBgPos] = useState({ x: 0, y: 0 });
+  const imageContainerRef = useRef<HTMLDivElement>(null);
+  const ZOOM_LEVEL = 2.5;
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const container = imageContainerRef.current;
+    if (!container) return;
+    const rect = container.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setZoomPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+    setBgPos({ x, y });
+  }, []);
 
   useEffect(() => {
     if (!params.id) return;
@@ -131,9 +148,15 @@ export default function ProductDetailPage() {
 
       <div className="max-w-7xl mx-auto px-4 pb-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-          {/* Image Area */}
+          {/* Image Area with Hover Zoom */}
           <div className="relative">
-            <div className="aspect-square rounded-xl overflow-hidden relative bg-ivory-200">
+            <div
+              ref={imageContainerRef}
+              className="aspect-square rounded-xl overflow-hidden relative bg-ivory-200 cursor-crosshair"
+              onMouseEnter={() => setIsZooming(true)}
+              onMouseLeave={() => setIsZooming(false)}
+              onMouseMove={handleMouseMove}
+            >
               {product.image_url ? (
                 <Image
                   src={product.image_url}
@@ -152,17 +175,56 @@ export default function ProductDetailPage() {
               )}
 
               {/* Category badge */}
-              <div className="absolute top-4 left-4 px-4 py-1.5 bg-white/90 backdrop-blur-sm rounded-full shadow-sm">
+              <div className="absolute top-4 left-4 px-4 py-1.5 bg-white/90 backdrop-blur-sm rounded-full shadow-sm z-10">
                 <span className="font-body text-maroon-900 text-xs font-semibold tracking-wider uppercase">{product.category}</span>
               </div>
 
               {/* Discount badge */}
               {discount > 0 && (
-                <div className="absolute top-4 right-4 w-14 h-14 bg-gold-500 rounded-full flex items-center justify-center shadow-md">
+                <div className="absolute top-4 right-4 w-14 h-14 bg-gold-500 rounded-full flex items-center justify-center shadow-md z-10">
                   <span className="font-body text-maroon-900 text-xs font-bold">-{discount}%</span>
                 </div>
               )}
+
+              {/* Zoom lens indicator */}
+              {isZooming && product.image_url && (
+                <div
+                  className="absolute w-32 h-32 border-2 border-white/70 rounded-full pointer-events-none z-20 shadow-lg hidden lg:block"
+                  style={{
+                    left: zoomPos.x - 64,
+                    top: zoomPos.y - 64,
+                    background: 'rgba(255,255,255,0.1)',
+                  }}
+                />
+              )}
             </div>
+
+            {/* Zoomed preview panel (desktop only) */}
+            {isZooming && product.image_url && (
+              <div
+                className="hidden lg:block absolute top-0 left-[calc(100%+1rem)] w-[500px] h-[500px] rounded-xl overflow-hidden border-2 border-ivory-300 shadow-2xl z-30 bg-ivory-200"
+              >
+                <div
+                  className="w-full h-full"
+                  style={{
+                    backgroundImage: `url(${product.image_url})`,
+                    backgroundSize: `${ZOOM_LEVEL * 100}%`,
+                    backgroundPosition: `${bgPos.x}% ${bgPos.y}%`,
+                    backgroundRepeat: 'no-repeat',
+                  }}
+                />
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-black/50 backdrop-blur-sm rounded-full">
+                  <span className="font-body text-xs text-white/80">{ZOOM_LEVEL}x zoom</span>
+                </div>
+              </div>
+            )}
+
+            {/* Mobile: tap hint */}
+            {product.image_url && (
+              <div className="lg:hidden absolute bottom-3 right-3 px-3 py-1.5 bg-black/40 backdrop-blur-sm rounded-full z-10">
+                <span className="font-body text-xs text-white/80">Pinch to zoom</span>
+              </div>
+            )}
           </div>
 
           {/* Product Info */}
