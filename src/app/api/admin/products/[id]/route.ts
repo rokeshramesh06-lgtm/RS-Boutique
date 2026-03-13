@@ -41,6 +41,7 @@ export async function PUT(
       colors,
       in_stock,
       featured,
+      material,
     } = await request.json();
 
     // Build update object with only defined fields
@@ -57,6 +58,7 @@ export async function PUT(
     if (colors !== undefined) updates.colors = colors;
     if (in_stock !== undefined) updates.in_stock = in_stock;
     if (featured !== undefined) updates.featured = featured;
+    if (material !== undefined) updates.material = material;
 
     const { data: product, error } = await supabase
       .from('products')

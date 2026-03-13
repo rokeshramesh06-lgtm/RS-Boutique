@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
     }
 
-    const { image_base64, image_url } = await request.json();
+    const { image_base64, image_url, material } = await request.json();
 
     if (!image_base64 && !image_url) {
       return NextResponse.json({ error: 'No image provided' }, { status: 400 });
@@ -64,6 +64,8 @@ export async function POST(request: NextRequest) {
 - "category": One of: ${CATEGORIES.map(c => `"${c}"`).join(', ')}. Determine based on the garment type.
 - "colors": Comma-separated list of visible colors (e.g., "Red, Gold, Maroon").
 - "sizes": An array of available sizes. For Sarees, ALWAYS use ["Free Size"]. For other categories (Churidar, Nighty), use standard sizes like ["S", "M", "L", "XL", "XXL"] based on what's typical for that garment type.
+- "material": The fabric/material type (e.g., "Cotton", "Silk", "Chiffon", "Georgette", "Crepe", etc.)
+${material ? `\nCRITICAL: The user has confirmed this garment is made of "${material}". You MUST use "${material}" as the material. Do NOT guess a different material. Reflect this in the name, description, and pricing. For example, cotton sarees are typically much cheaper than silk sarees — price accordingly.` : '\nTry to identify the fabric/material from the image. Look at the texture, sheen, drape, and weave pattern. Cotton has a matte finish and visible weave. Silk has a distinctive sheen and smooth texture. Georgette is sheer and flowy. Chiffon is lightweight and translucent. Be accurate — do not default to silk unless the fabric clearly shows silk-like sheen.'}
 
 IMPORTANT: Return ONLY valid JSON, no markdown, no code blocks, no explanation.`,
               },

@@ -20,6 +20,7 @@ export interface Product {
   colors: string[];
   in_stock: boolean;
   featured: boolean;
+  material: string | null;
   created_at: string;
 }
 

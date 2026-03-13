@@ -10,6 +10,7 @@ const formatPrice = (price: number) => '₹' + price.toLocaleString('en-IN');
 const CATEGORIES = ['Sarees', 'Churidar', 'Nighty'];
 const GENDERS = ['Women'];
 const SIZE_OPTIONS = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'Free Size'];
+const MATERIALS = ['Cotton', 'Silk', 'Chiffon', 'Georgette', 'Crepe', 'Linen', 'Net', 'Velvet', 'Satin', 'Organza', 'Banarasi Silk', 'Chanderi', 'Kanjivaram Silk', 'Tussar Silk'];
 const ORDER_STATUSES = ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'];
 
 const STATUS_STYLES: Record<string, string> = {
@@ -37,6 +38,7 @@ interface ProductForm {
   gender: string;
   sizes: string[];
   colors: string;
+  material: string;
   image_url: string;
   image_gradient: string;
   in_stock: boolean;
@@ -50,6 +52,7 @@ interface BulkItem {
   status: 'queued' | 'uploading' | 'analyzing' | 'creating' | 'generating' | 'done' | 'error';
   productName?: string;
   error?: string;
+  material?: string;
 }
 
 interface CouponForm {
@@ -65,7 +68,7 @@ interface CouponForm {
 const emptyProductForm: ProductForm = {
   name: '', description: '', price: '', original_price: '',
   category: 'Sarees', gender: 'Women', sizes: ['M'],
-  colors: '', image_url: '', image_gradient: '#8B1A1A to #C9A84C',
+  colors: '', material: '', image_url: '', image_gradient: '#8B1A1A to #C9A84C',
   in_stock: true, featured: false,
 };
 
@@ -104,6 +107,7 @@ export default function AdminPage() {
   const [showBulkUpload, setShowBulkUpload] = useState(false);
   const [bulkItems, setBulkItems] = useState<BulkItem[]>([]);
   const [bulkProcessing, setBulkProcessing] = useState(false);
+  const [bulkMaterial, setBulkMaterial] = useState('');
   const bulkInputRef = useRef<HTMLInputElement>(null);
 
   // Coupon form
@@ -172,6 +176,7 @@ export default function AdminPage() {
       image_gradient: productForm.image_gradient,
       in_stock: productForm.in_stock,
       featured: productForm.featured,
+      material: productForm.material || null,
     };
 
     try {
@@ -213,6 +218,7 @@ export default function AdminPage() {
       image_gradient: product.image_gradient,
       in_stock: product.in_stock,
       featured: product.featured,
+      material: product.material || '',
     });
     setEditingProduct(product.id);
     setShowProductForm(true);
@@ -290,13 +296,13 @@ export default function AdminPage() {
   };
 
   // Generate cover image with a model wearing the garment
-  const generateCover = async (base64: string, productName: string, category: string) => {
+  const generateCover = async (base64: string, productName: string, category: string, material?: string) => {
     setGeneratingCover(true);
     try {
       const res = await fetch('/api/admin/generate-cover', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image_base64: base64, product_name: productName, category }),
+        body: JSON.stringify({ image_base64: base64, product_name: productName, category, material: material || productForm.material || undefined }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Cover generation failed');
@@ -317,17 +323,22 @@ export default function AdminPage() {
     setAnalyzing(true);
     let productName = '';
     let category = 'Sarees';
+    let material = productForm.material || '';
     try {
       const res = await fetch('/api/admin/analyze-image', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image_base64: base64 }),
+        body: JSON.stringify({ image_base64: base64, material: material || undefined }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Analysis failed');
 
       productName = data.name || '';
       category = data.category || 'Sarees';
+      // If AI returned a material and user didn't pre-select one, use it
+      if (data.material && !material) {
+        material = data.material;
+      }
 
       setProductForm((prev) => ({
         ...prev,
@@ -338,6 +349,7 @@ export default function AdminPage() {
         category: data.category || prev.category,
         colors: data.colors || prev.colors,
         sizes: data.sizes || prev.sizes,
+        material: prev.material || data.material || prev.material,
       }));
     } catch (err: unknown) {
       console.error('AI analysis failed:', err);
@@ -346,7 +358,7 @@ export default function AdminPage() {
     }
 
     // After analysis, generate cover with model wearing the garment
-    generateCover(base64, productName, category);
+    generateCover(base64, productName, category, material);
   };
 
   // Image upload handler
@@ -410,7 +422,7 @@ export default function AdminPage() {
   };
 
   // Phase 1: Upload, analyze, create product (no cover yet)
-  const processBulkItem = async (item: BulkItem): Promise<{ id: string; productId: number; base64: string; name: string; category: string } | null> => {
+  const processBulkItem = async (item: BulkItem): Promise<{ id: string; productId: number; base64: string; name: string; category: string; material?: string } | null> => {
     const updateItem = (updates: Partial<BulkItem>) => {
       setBulkItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, ...updates } : i)));
     };
@@ -429,10 +441,11 @@ export default function AdminPage() {
       // Step 2: Get base64 & analyze
       updateItem({ status: 'analyzing' });
       const base64 = await fileToBase64(item.file);
+      const itemMaterial = item.material || bulkMaterial || undefined;
       const analyzeRes = await fetch('/api/admin/analyze-image', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image_base64: base64 }),
+        body: JSON.stringify({ image_base64: base64, material: itemMaterial }),
       });
       const analyzeData = await analyzeRes.json();
       if (!analyzeRes.ok) throw new Error(analyzeData.error || 'Analysis failed');
@@ -443,6 +456,7 @@ export default function AdminPage() {
 
       // Step 3: Create product
       updateItem({ status: 'creating' });
+      const resolvedMaterial = itemMaterial || analyzeData.material || null;
       const productBody = {
         name: productName,
         description: analyzeData.description || '',
@@ -456,6 +470,7 @@ export default function AdminPage() {
         image_gradient: '#8B1A1A to #C9A84C',
         in_stock: true,
         featured: false,
+        material: resolvedMaterial,
       };
 
       const createRes = await fetch('/api/admin/products', {
@@ -471,7 +486,7 @@ export default function AdminPage() {
 
       // Mark as generating — cover will be done in phase 2
       updateItem({ status: 'generating' });
-      return { id: item.id, productId: createData.product.id, base64, name: productName, category };
+      return { id: item.id, productId: createData.product.id, base64, name: productName, category, material: resolvedMaterial || undefined };
     } catch (err: unknown) {
       updateItem({ status: 'error', error: err instanceof Error ? err.message : 'Unknown error' });
       return null;
@@ -503,6 +518,7 @@ export default function AdminPage() {
               image_base64: item.base64,
               product_name: item.name,
               category: item.category,
+              material: item.material,
             }),
           });
           const coverData = await coverRes.json();
@@ -528,6 +544,7 @@ export default function AdminPage() {
     if (bulkProcessing) return;
     bulkItems.forEach((i) => URL.revokeObjectURL(i.preview));
     setBulkItems([]);
+    setBulkMaterial('');
     setShowBulkUpload(false);
   };
 
@@ -840,6 +857,27 @@ export default function AdminPage() {
                         </div>
 
                         <div>
+                          <label className="font-body text-sm font-medium text-gray-700 mb-1.5 block">Material / Fabric</label>
+                          <p className="font-body text-xs text-gray-400 mb-2">Set this before uploading an image for more accurate AI results</p>
+                          <div className="flex flex-wrap gap-2">
+                            {MATERIALS.map((mat) => (
+                              <button
+                                key={mat}
+                                type="button"
+                                onClick={() => setProductForm({ ...productForm, material: productForm.material === mat ? '' : mat })}
+                                className={`px-3 py-1.5 rounded-lg font-body text-xs transition-all ${
+                                  productForm.material === mat
+                                    ? 'bg-maroon-900 text-white'
+                                    : 'bg-ivory-200 text-gray-600 hover:bg-ivory-300'
+                                }`}
+                              >
+                                {mat}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
                           <label className="font-body text-sm font-medium text-gray-700 mb-1.5 block">Sizes</label>
                           <div className="flex flex-wrap gap-2">
                             {SIZE_OPTIONS.map((size) => (
@@ -1099,6 +1137,31 @@ export default function AdminPage() {
                                 </p>
                               </div>
                             </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Bulk material selector */}
+                      {!bulkProcessing && (
+                        <div className="px-6 pt-4">
+                          <label className="font-body text-sm font-medium text-gray-700 mb-1.5 block">
+                            Material / Fabric <span className="text-gray-400 font-normal">(applies to all images)</span>
+                          </label>
+                          <div className="flex flex-wrap gap-1.5">
+                            {MATERIALS.map((mat) => (
+                              <button
+                                key={mat}
+                                type="button"
+                                onClick={() => setBulkMaterial(bulkMaterial === mat ? '' : mat)}
+                                className={`px-2.5 py-1 rounded-lg font-body text-xs transition-all ${
+                                  bulkMaterial === mat
+                                    ? 'bg-maroon-900 text-white'
+                                    : 'bg-ivory-200 text-gray-600 hover:bg-ivory-300'
+                                }`}
+                              >
+                                {mat}
+                              </button>
+                            ))}
                           </div>
                         </div>
                       )}

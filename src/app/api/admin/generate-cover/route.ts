@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
     }
 
-    const { image_base64, product_name, category } = await request.json();
+    const { image_base64, product_name, category, material } = await request.json();
 
     if (!image_base64) {
       return NextResponse.json({ error: 'No image provided' }, { status: 400 });
@@ -36,15 +36,28 @@ export async function POST(request: NextRequest) {
     }
 
     const garmentType = category || 'saree';
-    const name = product_name || garmentType;
+    const fabricDesc = material ? `${material} ${garmentType}` : garmentType;
 
-    const prompt = `Generate an e-commerce product photo of exactly ONE Indian woman model wearing this ${garmentType}.
+    const prompt = `Generate an e-commerce product photo of exactly ONE Indian woman model wearing this ${fabricDesc}.
 
 STRICT RULES:
 - EXACTLY ONE person in the image — no second person, no reflections, no shadows of other people
 - ZERO text, watermarks, labels, captions, logos, or any written content anywhere in the image
 - NO borders, frames, collages, split screens, or before/after comparisons
 - The model wears the EXACT garment from the input image — same colors, patterns, fabric, and design
+${material ? `- CRITICAL FABRIC ACCURACY: This is a ${material} garment. The fabric in the generated image MUST look like ${material}. ${
+  material.toLowerCase().includes('cotton') ? 'Cotton has a matte, soft finish with visible weave texture — NO silk-like sheen or shimmer.' :
+  material.toLowerCase().includes('silk') ? 'Silk has a natural lustrous sheen, smooth drape, and rich appearance.' :
+  material.toLowerCase().includes('chiffon') ? 'Chiffon is sheer, lightweight, and flowy with a soft translucent quality.' :
+  material.toLowerCase().includes('georgette') ? 'Georgette has a crinkled texture, slightly rough feel, and semi-sheer look.' :
+  material.toLowerCase().includes('crepe') ? 'Crepe has a crimped, pebbled texture with a matte to subtle sheen finish.' :
+  material.toLowerCase().includes('linen') ? 'Linen has a crisp, textured, slightly rough natural finish with visible slubs.' :
+  material.toLowerCase().includes('net') ? 'Net fabric is see-through mesh with a structured, open-weave pattern.' :
+  material.toLowerCase().includes('velvet') ? 'Velvet has a dense, plush, soft pile with rich color depth.' :
+  material.toLowerCase().includes('satin') ? 'Satin has a glossy, smooth surface on one side and matte on the other.' :
+  material.toLowerCase().includes('organza') ? 'Organza is sheer, stiff, and crisp with a slight shimmer.' :
+  `Ensure the fabric texture and drape accurately represents ${material}.`
+} Do NOT make it look like a different fabric.` : '- The fabric texture, sheen, and drape must match the input image exactly — do not add shine to matte fabrics or flatten shiny ones.'}
 - Clean solid or soft gradient studio background (white, cream, or light gray)
 - Professional studio lighting, soft and even
 - The model must be CENTERED in the frame with equal space on both sides

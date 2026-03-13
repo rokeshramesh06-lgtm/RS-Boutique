@@ -89,6 +89,7 @@ export async function POST(request: NextRequest) {
       colors,
       in_stock,
       featured,
+      material,
     } = await request.json();
 
     if (!name || !description || !price || !original_price || !category || !gender) {
@@ -113,6 +114,7 @@ export async function POST(request: NextRequest) {
         colors: colors || [],
         in_stock: in_stock ?? true,
         featured: featured ?? false,
+        material: material || null,
       })
       .select()
       .single();
