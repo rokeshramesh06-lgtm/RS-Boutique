@@ -103,6 +103,14 @@ export default function AdminPage() {
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Zoom modal
+  const [zoomImage, setZoomImage] = useState<string | null>(null);
+  const [zoomScale, setZoomScale] = useState(1);
+  const [zoomPos, setZoomPos] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const zoomContainerRef = useRef<HTMLDivElement>(null);
+
   // Bulk upload
   const [showBulkUpload, setShowBulkUpload] = useState(false);
   const [bulkItems, setBulkItems] = useState<BulkItem[]>([]);
@@ -572,6 +580,41 @@ export default function AdminPage() {
     }
   };
 
+  // Zoom handlers
+  const openZoom = (url: string) => {
+    setZoomImage(url);
+    setZoomScale(1);
+    setZoomPos({ x: 0, y: 0 });
+  };
+
+  const closeZoom = () => {
+    setZoomImage(null);
+    setZoomScale(1);
+    setZoomPos({ x: 0, y: 0 });
+    setIsDragging(false);
+  };
+
+  const handleZoomWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.2 : 0.2;
+    setZoomScale((prev) => Math.min(Math.max(prev + delta, 0.5), 5));
+  };
+
+  const handleZoomMouseDown = (e: React.MouseEvent) => {
+    if (e.button !== 0) return;
+    setIsDragging(true);
+    setDragStart({ x: e.clientX - zoomPos.x, y: e.clientY - zoomPos.y });
+  };
+
+  const handleZoomMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    setZoomPos({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
+  };
+
+  const handleZoomMouseUp = () => {
+    setIsDragging(false);
+  };
+
   if (authLoading) {
     return (
       <div className="min-h-screen bg-ivory-100 flex items-center justify-center">
@@ -949,18 +992,28 @@ export default function AdminPage() {
 
                           {/* Image preview */}
                           {productForm.image_url && (
-                            <div className="mb-3 relative inline-block">
-                              <Image
-                                src={productForm.image_url}
-                                alt="Preview"
-                                width={120}
-                                height={120}
-                                className="h-28 w-28 object-cover rounded-xl border border-ivory-300"
-                              />
+                            <div className="mb-3 relative inline-block group">
+                              <div
+                                className="cursor-zoom-in relative"
+                                onClick={() => openZoom(productForm.image_url)}
+                              >
+                                <Image
+                                  src={productForm.image_url}
+                                  alt="Preview"
+                                  width={120}
+                                  height={120}
+                                  className="h-28 w-28 object-cover rounded-xl border border-ivory-300"
+                                />
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 rounded-xl transition-all flex items-center justify-center">
+                                  <svg className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                                  </svg>
+                                </div>
+                              </div>
                               <button
                                 type="button"
                                 onClick={() => setProductForm({ ...productForm, image_url: '' })}
-                                className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
+                                className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 transition-colors z-10"
                               >
                                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1701,6 +1754,81 @@ export default function AdminPage() {
           </>
         )}
       </div>
+
+      {/* Zoom Modal */}
+      {zoomImage && (
+        <div
+          className="fixed inset-0 z-[60] bg-black/90 flex items-center justify-center"
+          onClick={closeZoom}
+        >
+          {/* Controls bar */}
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-black/60 backdrop-blur-sm rounded-full px-4 py-2 z-10" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setZoomScale((s) => Math.max(s - 0.3, 0.5))}
+              className="w-8 h-8 flex items-center justify-center text-white hover:bg-white/20 rounded-full transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
+              </svg>
+            </button>
+            <span className="font-body text-sm text-white/80 min-w-[3rem] text-center">{Math.round(zoomScale * 100)}%</span>
+            <button
+              onClick={() => setZoomScale((s) => Math.min(s + 0.3, 5))}
+              className="w-8 h-8 flex items-center justify-center text-white hover:bg-white/20 rounded-full transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+              </svg>
+            </button>
+            <div className="w-px h-5 bg-white/30" />
+            <button
+              onClick={() => { setZoomScale(1); setZoomPos({ x: 0, y: 0 }); }}
+              className="px-3 py-1 text-white/80 hover:bg-white/20 rounded-full font-body text-xs transition-colors"
+            >
+              Reset
+            </button>
+            <div className="w-px h-5 bg-white/30" />
+            <button
+              onClick={closeZoom}
+              className="w-8 h-8 flex items-center justify-center text-white hover:bg-white/20 rounded-full transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Zoomable image */}
+          <div
+            ref={zoomContainerRef}
+            className="w-full h-full flex items-center justify-center overflow-hidden"
+            onWheel={handleZoomWheel}
+            onMouseDown={handleZoomMouseDown}
+            onMouseMove={handleZoomMouseMove}
+            onMouseUp={handleZoomMouseUp}
+            onMouseLeave={handleZoomMouseUp}
+            onClick={(e) => e.stopPropagation()}
+            style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+          >
+            <img
+              src={zoomImage}
+              alt="Zoomed preview"
+              className="max-w-none select-none pointer-events-none"
+              style={{
+                transform: `translate(${zoomPos.x}px, ${zoomPos.y}px) scale(${zoomScale})`,
+                transition: isDragging ? 'none' : 'transform 0.15s ease-out',
+                maxHeight: '85vh',
+              }}
+              draggable={false}
+            />
+          </div>
+
+          {/* Hint */}
+          <p className="absolute bottom-4 left-1/2 -translate-x-1/2 font-body text-xs text-white/50">
+            Scroll to zoom &middot; Drag to pan &middot; Click outside to close
+          </p>
+        </div>
+      )}
     </div>
   );
 }
