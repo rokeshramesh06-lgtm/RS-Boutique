@@ -551,6 +551,10 @@ export default function AdminPage() {
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setDragOver(false);
+    if (!productForm.material) {
+      setProductError('Please select a material/fabric first');
+      return;
+    }
     const file = e.dataTransfer.files[0];
     if (file && file.type.startsWith('image/')) {
       handleImageUpload(file);
@@ -558,6 +562,10 @@ export default function AdminPage() {
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!productForm.material) {
+      setProductError('Please select a material/fabric first');
+      return;
+    }
     const file = e.target.files?.[0];
     if (file) {
       handleImageUpload(file);
@@ -857,27 +865,6 @@ export default function AdminPage() {
                         </div>
 
                         <div>
-                          <label className="font-body text-sm font-medium text-gray-700 mb-1.5 block">Material / Fabric</label>
-                          <p className="font-body text-xs text-gray-400 mb-2">Set this before uploading an image for more accurate AI results</p>
-                          <div className="flex flex-wrap gap-2">
-                            {MATERIALS.map((mat) => (
-                              <button
-                                key={mat}
-                                type="button"
-                                onClick={() => setProductForm({ ...productForm, material: productForm.material === mat ? '' : mat })}
-                                className={`px-3 py-1.5 rounded-lg font-body text-xs transition-all ${
-                                  productForm.material === mat
-                                    ? 'bg-maroon-900 text-white'
-                                    : 'bg-ivory-200 text-gray-600 hover:bg-ivory-300'
-                                }`}
-                              >
-                                {mat}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div>
                           <label className="font-body text-sm font-medium text-gray-700 mb-1.5 block">Sizes</label>
                           <div className="flex flex-wrap gap-2">
                             {SIZE_OPTIONS.map((size) => (
@@ -913,6 +900,33 @@ export default function AdminPage() {
                             placeholder="Red, Gold, Maroon"
                             className="w-full px-4 py-2.5 border border-ivory-300 rounded-lg font-body text-sm focus:outline-none focus:border-gold-500 transition-all"
                           />
+                        </div>
+
+                        <div className={`p-4 rounded-xl border-2 transition-all ${productForm.material ? 'border-green-300 bg-green-50/30' : 'border-amber-300 bg-amber-50/30'}`}>
+                          <label className="font-body text-sm font-semibold text-gray-700 mb-1 block">
+                            Material / Fabric *
+                          </label>
+                          <p className="font-body text-xs text-gray-500 mb-2.5">
+                            {productForm.material
+                              ? `Selected: ${productForm.material} — you can now upload an image`
+                              : 'You must select a material before uploading an image'}
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {MATERIALS.map((mat) => (
+                              <button
+                                key={mat}
+                                type="button"
+                                onClick={() => setProductForm({ ...productForm, material: productForm.material === mat ? '' : mat })}
+                                className={`px-3 py-1.5 rounded-lg font-body text-xs transition-all ${
+                                  productForm.material === mat
+                                    ? 'bg-maroon-900 text-white shadow-sm'
+                                    : 'bg-white text-gray-600 hover:bg-ivory-200 border border-ivory-300'
+                                }`}
+                              >
+                                {mat}
+                              </button>
+                            ))}
+                          </div>
                         </div>
 
                         <div>
@@ -958,14 +972,16 @@ export default function AdminPage() {
                           {/* Upload area */}
                           {!productForm.image_url && (
                             <div
-                              onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                              onDragOver={(e) => { e.preventDefault(); if (productForm.material) setDragOver(true); }}
                               onDragLeave={() => setDragOver(false)}
                               onDrop={handleDrop}
-                              onClick={() => fileInputRef.current?.click()}
-                              className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all ${
-                                dragOver
-                                  ? 'border-gold-500 bg-gold-50'
-                                  : 'border-ivory-300 hover:border-gold-400 hover:bg-ivory-100/50'
+                              onClick={() => productForm.material ? fileInputRef.current?.click() : setProductError('Please select a material/fabric first')}
+                              className={`border-2 border-dashed rounded-xl p-6 text-center transition-all ${
+                                !productForm.material
+                                  ? 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-60'
+                                  : dragOver
+                                    ? 'border-gold-500 bg-gold-50 cursor-pointer'
+                                    : 'border-ivory-300 hover:border-gold-400 hover:bg-ivory-100/50 cursor-pointer'
                               } ${uploading ? 'opacity-60 pointer-events-none' : ''}`}
                             >
                               <input
@@ -1143,10 +1159,15 @@ export default function AdminPage() {
 
                       {/* Bulk material selector */}
                       {!bulkProcessing && (
-                        <div className="px-6 pt-4">
-                          <label className="font-body text-sm font-medium text-gray-700 mb-1.5 block">
-                            Material / Fabric <span className="text-gray-400 font-normal">(applies to all images)</span>
+                        <div className={`mx-6 mt-4 p-4 rounded-xl border-2 transition-all ${bulkMaterial ? 'border-green-300 bg-green-50/30' : 'border-amber-300 bg-amber-50/30'}`}>
+                          <label className="font-body text-sm font-semibold text-gray-700 mb-1 block">
+                            Material / Fabric * <span className="text-gray-400 font-normal">(applies to all images)</span>
                           </label>
+                          <p className="font-body text-xs text-gray-500 mb-2.5">
+                            {bulkMaterial
+                              ? `Selected: ${bulkMaterial} — you can now start processing`
+                              : 'You must select a material before processing'}
+                          </p>
                           <div className="flex flex-wrap gap-1.5">
                             {MATERIALS.map((mat) => (
                               <button
@@ -1155,8 +1176,8 @@ export default function AdminPage() {
                                 onClick={() => setBulkMaterial(bulkMaterial === mat ? '' : mat)}
                                 className={`px-2.5 py-1 rounded-lg font-body text-xs transition-all ${
                                   bulkMaterial === mat
-                                    ? 'bg-maroon-900 text-white'
-                                    : 'bg-ivory-200 text-gray-600 hover:bg-ivory-300'
+                                    ? 'bg-maroon-900 text-white shadow-sm'
+                                    : 'bg-white text-gray-600 hover:bg-ivory-200 border border-ivory-300'
                                 }`}
                               >
                                 {mat}
@@ -1306,16 +1327,21 @@ export default function AdminPage() {
                               Processing...
                             </div>
                           ) : bulkItems.some((i) => i.status === 'queued' || i.status === 'error') ? (
-                            <button
-                              onClick={startBulkProcessing}
-                              disabled={bulkItems.filter((i) => i.status === 'queued' || i.status === 'error').length === 0}
-                              className="px-6 py-2.5 bg-gradient-to-r from-amber-600 to-amber-500 text-white font-body text-sm font-semibold rounded-lg hover:from-amber-700 hover:to-amber-600 transition-all shadow-sm hover:shadow-md disabled:opacity-50 flex items-center gap-2"
-                            >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                              </svg>
-                              Start Processing ({bulkItems.filter((i) => i.status === 'queued' || i.status === 'error').length})
-                            </button>
+                            <div className="flex items-center gap-3">
+                              {!bulkMaterial && (
+                                <span className="font-body text-xs text-red-500 font-medium">Select a material first</span>
+                              )}
+                              <button
+                                onClick={startBulkProcessing}
+                                disabled={!bulkMaterial || bulkItems.filter((i) => i.status === 'queued' || i.status === 'error').length === 0}
+                                className="px-6 py-2.5 bg-gradient-to-r from-amber-600 to-amber-500 text-white font-body text-sm font-semibold rounded-lg hover:from-amber-700 hover:to-amber-600 transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                                Start Processing ({bulkItems.filter((i) => i.status === 'queued' || i.status === 'error').length})
+                              </button>
+                            </div>
                           ) : (
                             <button
                               onClick={closeBulkUpload}
